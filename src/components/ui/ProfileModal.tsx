@@ -57,12 +57,27 @@ export default function ProfileModal({ profile, userId, onClose }: ProfileModalP
     setIsSaving(true);
     setError(null);
     try {
-      const res = await fetch('/api/profile', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ display_name: name, avatar_url: avatarUrl }),
-      });
-      if (!res.ok) throw new Error('保存に失敗しました');
+      const supabase = createClient();
+
+      // ブラウザクライアントで auth.uid() を確実にセットするため、
+      // user.id を明示的に取得してから upsert する
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('ログインが必要です');
+
+      const { error: upsertError } = await supabase
+        .from('profiles')
+        .upsert(
+          {
+            id: user.id,          // ← RLS の auth.uid() = id を満たすために必須
+            display_name: name,
+            avatar_url: avatarUrl,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: 'id' }
+        );
+
+      if (upsertError) throw upsertError;
+
       router.refresh();
       onClose();
     } catch (err: unknown) {

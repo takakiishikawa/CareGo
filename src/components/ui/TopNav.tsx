@@ -37,7 +37,7 @@ export default function TopNav({ morningDone, eveningDone, profile, userId }: To
     <>
       <header style={{ background: '#FFFFFF', borderBottom: '0.5px solid var(--border-color)' }}>
         <div style={{
-          maxWidth: '900px', margin: '0 auto', padding: '0 32px',
+          maxWidth: '1100px', margin: '0 auto', padding: '0 40px',
           height: '58px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
           <Logo size="sm" />

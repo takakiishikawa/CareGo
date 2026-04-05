@@ -40,7 +40,7 @@ export default async function CheckinPage() {
         userId={user.id}
       />
 
-      <main style={{ maxWidth: '620px', margin: '0 auto', padding: '48px 32px' }}>
+      <main style={{ maxWidth: '680px', margin: '0 auto', padding: '48px 40px' }}>
         {alreadyDone ? (
           <div style={{
             background: '#FFFFFF', border: '0.5px solid var(--border-color)',

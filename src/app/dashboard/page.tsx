@@ -88,7 +88,7 @@ export default async function DashboardPage() {
     <div style={{ minHeight: '100vh', background: '#F8F6F2' }}>
       <TopNav morningDone={!!morningCheckin} eveningDone={!!eveningCheckin} profile={profile} userId={user.id} />
 
-      <main style={{ maxWidth: '900px', margin: '0 auto', padding: '32px 32px 64px' }}>
+      <main style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 40px 64px' }}>
 
         {/* チェックインCTA */}
         {showCTA && (
@@ -187,7 +187,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* グラフ行 */}
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px', marginBottom: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
           <div style={{
             background: '#FFFFFF', border: '0.5px solid var(--border-color)',
             borderRadius: '14px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
