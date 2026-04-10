@@ -29,6 +29,15 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
+  // PWA・静的ファイルは認証不要（manifest, sw, icons）
+  if (
+    pathname === '/manifest.json' ||
+    pathname === '/sw.js' ||
+    pathname.startsWith('/icons/')
+  ) {
+    return supabaseResponse;
+  }
+
   // 未ログインユーザーをloginへリダイレクト
   if (!user && pathname !== '/login' && !pathname.startsWith('/api/auth')) {
     return NextResponse.redirect(new URL('/login', request.url));
