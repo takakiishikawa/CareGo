@@ -1,17 +1,15 @@
 const CACHE_NAME = 'carego-v1';
-const STATIC_ASSETS = [
-  '/',
-  '/dashboard',
-  '/checkin',
-  '/manifest.json',
-];
 
-// インストール: 静的アセットをキャッシュ
+// インストール: 認証不要な静的アセットのみキャッシュ
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
-    }).catch(() => {})
+      return cache.addAll([
+        '/manifest.json',
+        '/icons/icon-192.png',
+        '/icons/icon-512.png',
+      ]);
+    })
   );
   self.skipWaiting();
 });
@@ -32,13 +30,18 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
-  // API リクエストはキャッシュしない
-  if (url.pathname.startsWith('/api/')) return;
+
+  // API・認証ルートはキャッシュしない（ネットワークに委譲）
+  if (
+    url.pathname.startsWith('/api/') ||
+    url.pathname.startsWith('/_next/') ||
+    url.pathname === '/login'
+  ) return;
 
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        if (response.ok) {
+        if (response.ok && response.status < 300) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         }
@@ -52,7 +55,7 @@ self.addEventListener('fetch', (event) => {
 self.addEventListener('push', (event) => {
   let data = { title: 'CareGo', body: 'チェックインの時間です' };
   try {
-    data = event.data.json();
+    if (event.data) data = event.data.json();
   } catch {}
 
   event.waitUntil(
