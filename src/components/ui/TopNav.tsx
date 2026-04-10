@@ -51,15 +51,12 @@ export default function TopNav({ morningDone, eveningDone, profile, userId }: To
   return (
     <>
       <header style={{ background: 'var(--bg-card)', borderBottom: '0.5px solid var(--border-color)' }}>
-        <div style={{
-          maxWidth: '1100px', margin: '0 auto', padding: '0 40px',
-          height: '58px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        }}>
+        <div className="nav-inner">
           <Logo size="sm" />
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             {/* チェックインステータス */}
-            <div style={{ display: 'flex', gap: '6px' }}>
+            <div className="nav-checkin-status" style={{ display: 'flex', gap: '6px' }}>
               {([
                 { key: 'morning', done: morningDone, Icon: Sun, label: '朝' },
                 { key: 'evening', done: eveningDone, Icon: Moon, label: '夜' },
@@ -76,6 +73,28 @@ export default function TopNav({ morningDone, eveningDone, profile, userId }: To
                 </span>
               ))}
             </div>
+
+            {/* テーマ切り替えボタン */}
+            <button
+              onClick={toggleTheme}
+              title={theme === 'dark' ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: '34px', height: '34px', borderRadius: '50%',
+                background: 'transparent',
+                border: '0.5px solid var(--border-color)',
+                cursor: 'pointer', transition: 'all 0.15s ease',
+                color: 'var(--text-placeholder)',
+                flexShrink: 0,
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--bg-subtle)'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-color-hover)'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-color)'; }}
+            >
+              {theme === 'dark'
+                ? <Sun size={15} strokeWidth={2} />
+                : <Moon size={15} strokeWidth={2} />
+              }
+            </button>
 
             {pathname !== '/checkin' && (
               <Link href="/checkin" style={{
@@ -153,36 +172,6 @@ export default function TopNav({ morningDone, eveningDone, profile, userId }: To
                   >
                     <span style={{ color: 'var(--text-placeholder)', display: 'flex' }}><User size={14} strokeWidth={2} /></span>
                     プロフィール
-                  </button>
-
-                  {/* テーマ切り替え */}
-                  <button
-                    onClick={toggleTheme}
-                    style={{ ...itemStyle(false), borderTop: '0.5px solid var(--border-color)' }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--bg-subtle)'; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
-                  >
-                    <span style={{ color: 'var(--text-placeholder)', display: 'flex' }}>
-                      {theme === 'dark' ? <Moon size={14} strokeWidth={2} /> : <Sun size={14} strokeWidth={2} />}
-                    </span>
-                    <span style={{ flex: 1, textAlign: 'left' }}>
-                      {theme === 'dark' ? 'ダークモード' : 'ライトモード'}
-                    </span>
-                    {/* pill toggle */}
-                    <div style={{
-                      width: '32px', height: '18px', borderRadius: '9px', flexShrink: 0,
-                      background: theme === 'dark' ? 'var(--accent-green)' : 'var(--border-muted)',
-                      position: 'relative', transition: 'background 0.2s ease',
-                    }}>
-                      <div style={{
-                        position: 'absolute', top: '2px',
-                        left: theme === 'dark' ? '16px' : '2px',
-                        width: '14px', height: '14px', borderRadius: '50%',
-                        background: 'white',
-                        transition: 'left 0.2s ease',
-                        boxShadow: '0 1px 2px rgba(0,0,0,0.2)',
-                      }} />
-                    </div>
                   </button>
 
                   {/* コンセプト */}

@@ -3,9 +3,15 @@ import { WeeklyInsight } from '@/lib/types';
 
 interface WeeklyInsightCardProps {
   insight: WeeklyInsight | null;
+  thisWeekAvg: number | null;
+  lastWeekAvg: number | null;
 }
 
-export default function WeeklyInsightCard({ insight }: WeeklyInsightCardProps) {
+export default function WeeklyInsightCard({ insight, thisWeekAvg, lastWeekAvg }: WeeklyInsightCardProps) {
+  const weekDiff = thisWeekAvg !== null && lastWeekAvg !== null
+    ? Math.round(thisWeekAvg - lastWeekAvg)
+    : null;
+
   return (
     <div style={{
       background: 'var(--bg-card)', border: '0.5px solid var(--border-color)',
@@ -13,22 +19,54 @@ export default function WeeklyInsightCard({ insight }: WeeklyInsightCardProps) {
       boxShadow: 'var(--shadow-card)',
     }}>
       <div style={{
-        display: 'flex', alignItems: 'center', gap: '8px',
-        fontSize: '14px', color: 'var(--text-placeholder)', fontWeight: 500, marginBottom: '16px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        marginBottom: '16px',
       }}>
-        <BrainCircuit size={16} strokeWidth={1.8} color="var(--text-placeholder)" />
-        Coa の週次レポート
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: 'var(--text-placeholder)', fontWeight: 500 }}>
+          <BrainCircuit size={16} strokeWidth={1.8} color="var(--text-placeholder)" />
+          Coa の週次レポート
+        </div>
+
+        {/* 週平均比較バッジ */}
+        {thisWeekAvg !== null && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '12px', color: 'var(--text-placeholder)' }}>
+              今週平均 <span style={{ color: 'var(--text-green)', fontWeight: 600 }}>{Math.round(thisWeekAvg)}</span>
+            </span>
+            {lastWeekAvg !== null && (
+              <>
+                <span style={{ fontSize: '12px', color: 'var(--text-placeholder)' }}>
+                  先週 <span style={{ fontWeight: 500 }}>{Math.round(lastWeekAvg)}</span>
+                </span>
+                {weekDiff !== null && weekDiff !== 0 && (
+                  <span style={{
+                    fontSize: '12px', fontWeight: 600,
+                    color: weekDiff > 0 ? 'var(--accent-green)' : 'var(--accent-amber)',
+                    background: weekDiff > 0 ? 'var(--bg-green)' : 'var(--bg-amber)',
+                    border: `0.5px solid ${weekDiff > 0 ? 'var(--border-green)' : 'var(--border-amber)'}`,
+                    padding: '2px 8px', borderRadius: '9999px',
+                  }}>
+                    {weekDiff > 0 ? `+${weekDiff}` : weekDiff}
+                  </span>
+                )}
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {insight ? (
         <div>
-          <div style={{ fontSize: '12px', color: 'var(--text-placeholder)', marginBottom: '12px' }}>
-            週平均スコア:{' '}
-            <span style={{ color: 'var(--text-green)', fontWeight: 600 }}>
-              {insight.avg_score ? Math.round(Number(insight.avg_score)) : '–'}
-            </span>
-          </div>
-          <p style={{ fontSize: '16px', color: 'var(--text-secondary)', lineHeight: 1.8, margin: 0 }}>
+          {weekDiff !== null && (
+            <p style={{ fontSize: '13px', color: weekDiff > 0 ? 'var(--text-green)' : 'var(--text-amber)', marginBottom: '10px', fontWeight: 500 }}>
+              {weekDiff > 0
+                ? `先週より平均+${weekDiff}ポイント、調子が上向いています`
+                : weekDiff < 0
+                  ? `先週より平均${weekDiff}ポイント、無理しすぎていないか振り返ってみましょう`
+                  : '先週と同じペースで維持できています'}
+            </p>
+          )}
+          <p style={{ fontSize: '15px', color: 'var(--text-secondary)', lineHeight: 1.8, margin: 0 }}>
             {insight.insight_text}
           </p>
         </div>

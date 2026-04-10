@@ -8,19 +8,15 @@ interface ScoreLineChartProps {
 }
 
 const W = 480;
-const H = 110;
-const PAD = { top: 15, right: 8, bottom: 28, left: 8 };
+const H = 220;
+const PAD = { top: 18, right: 10, bottom: 28, left: 10 };
 const CHART_W = W - PAD.left - PAD.right;
 const CHART_H = H - PAD.top - PAD.bottom;
-const MAX_SCORE = 100;
-const TW = 46; // tooltip width
-const TH = 24; // tooltip height
+const TW = 46;
+const TH = 24;
 
 function xPos(i: number, total: number): number {
   return PAD.left + (total === 1 ? CHART_W / 2 : (i / (total - 1)) * CHART_W);
-}
-function yPos(value: number): number {
-  return PAD.top + (1 - value / MAX_SCORE) * CHART_H;
 }
 
 interface HoveredPoint { x: number; y: number; value: number; label: string }
@@ -28,6 +24,15 @@ interface HoveredPoint { x: number; y: number; value: number; label: string }
 export default function ScoreLineChart({ data }: ScoreLineChartProps) {
   const today = new Date().toISOString().split('T')[0];
   const [hovered, setHovered] = useState<HoveredPoint | null>(null);
+
+  const scores = data.map(d => d.score).filter((s): s is number => s !== null);
+  const minScore = scores.length > 0 ? Math.max(0, Math.min(...scores) - 10) : 0;
+  const maxScore = scores.length > 0 ? Math.min(100, Math.max(...scores) + 10) : 100;
+  const range = maxScore - minScore || 1;
+
+  function yPos(value: number): number {
+    return PAD.top + (1 - (value - minScore) / range) * CHART_H;
+  }
 
   type Pt = { x: number; y: number };
   const groups: Pt[][] = [];
@@ -41,21 +46,36 @@ export default function ScoreLineChart({ data }: ScoreLineChartProps) {
 
   const baseline = PAD.top + CHART_H;
 
+  // グリッドライン（データ範囲に合わせて3本）
+  const gridValues = [
+    Math.round(minScore + range * 0.25),
+    Math.round(minScore + range * 0.5),
+    Math.round(minScore + range * 0.75),
+  ];
+
   return (
     <div>
       <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', overflow: 'visible' }}>
         <defs>
           <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" style={{ stopColor: 'var(--accent-green)', stopOpacity: 0.18 }} />
+            <stop offset="0%" style={{ stopColor: 'var(--accent-green)', stopOpacity: 0.20 }} />
             <stop offset="100%" style={{ stopColor: 'var(--accent-green)', stopOpacity: 0 }} />
           </linearGradient>
         </defs>
 
         {/* グリッドライン */}
-        <line
-          x1={PAD.left} y1={yPos(50)} x2={W - PAD.right} y2={yPos(50)}
-          style={{ stroke: 'var(--chart-grid)' }} strokeWidth="1" strokeDasharray="4 4"
-        />
+        {gridValues.map(v => (
+          <g key={v}>
+            <line
+              x1={PAD.left} y1={yPos(v)} x2={W - PAD.right} y2={yPos(v)}
+              style={{ stroke: 'var(--chart-grid)' }} strokeWidth="1" strokeDasharray="4 4"
+            />
+            <text x={PAD.left - 4} y={yPos(v) + 4} textAnchor="end" fontSize="10"
+              style={{ fill: 'var(--text-placeholder)' }} fontFamily="DM Sans, system-ui, sans-serif">
+              {v}
+            </text>
+          </g>
+        ))}
 
         {/* エリア + ライン */}
         {groups.map((group, gi) => {
@@ -66,7 +86,7 @@ export default function ScoreLineChart({ data }: ScoreLineChartProps) {
           return (
             <g key={gi}>
               <path d={areaPath} fill="url(#scoreGradient)" />
-              <path d={linePath} fill="none" style={{ stroke: 'var(--accent-green)' }} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d={linePath} fill="none" style={{ stroke: 'var(--accent-green)' }} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             </g>
           );
         })}
@@ -81,12 +101,11 @@ export default function ScoreLineChart({ data }: ScoreLineChartProps) {
           const label = isToday ? '今日' : `${date.getMonth() + 1}/${date.getDate()}`;
           return (
             <g key={d.date}>
-              <circle cx={cx} cy={cy} r={isToday ? 5 : 3.5}
+              <circle cx={cx} cy={cy} r={isToday ? 6.5 : 4.5}
                 style={{ fill: isToday ? 'var(--accent-green)' : 'var(--bg-card)', stroke: 'var(--accent-green)' }}
-                strokeWidth={isToday ? 0 : 2}
+                strokeWidth={isToday ? 0 : 2.5}
               />
-              {/* 大きめヒットエリア */}
-              <circle cx={cx} cy={cy} r={14} fill="transparent" style={{ cursor: 'pointer' }}
+              <circle cx={cx} cy={cy} r={16} fill="transparent" style={{ cursor: 'pointer' }}
                 onMouseEnter={() => setHovered({ x: cx, y: cy, value: d.score!, label })}
                 onMouseLeave={() => setHovered(null)}
               />
@@ -112,7 +131,7 @@ export default function ScoreLineChart({ data }: ScoreLineChartProps) {
         {/* Tooltip */}
         {hovered && (() => {
           const tx = Math.min(Math.max(hovered.x - TW / 2, PAD.left), W - PAD.right - TW);
-          const ty = hovered.y - TH - 8 < PAD.top ? hovered.y + 10 : hovered.y - TH - 8;
+          const ty = hovered.y - TH - 10 < PAD.top ? hovered.y + 12 : hovered.y - TH - 10;
           return (
             <g style={{ pointerEvents: 'none' }}>
               <rect x={tx} y={ty} width={TW} height={TH} rx={6}

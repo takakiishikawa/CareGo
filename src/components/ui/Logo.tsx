@@ -5,8 +5,8 @@ interface LogoProps {
 }
 
 const sizes = {
-  sm: { icon: 26, text: 19 },
-  md: { icon: 30, text: 22 },
+  sm: { icon: 28, text: 28 },
+  md: { icon: 32, text: 24 },
   lg: { icon: 44, text: 38 },
 };
 
@@ -43,7 +43,7 @@ export default function Logo({ size = 'md' }: LogoProps) {
       <span style={{
         fontFamily: 'var(--font-body, "DM Sans", system-ui, sans-serif)',
         fontSize: `${text}px`,
-        fontWeight: 600,
+        fontWeight: 700,
         color: '#2D8A5F',
         letterSpacing: '-0.3px',
       }}>

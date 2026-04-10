@@ -7,6 +7,7 @@ export interface Checkin {
   timing: CheckinTiming;
   mood_score: number;
   emotion_tags: string[];
+  activity_tags: string[];
   free_text: string | null;
   condition_score: number | null;
   ai_comment: string | null;

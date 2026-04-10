@@ -29,7 +29,7 @@ export default async function CheckinPage() {
     <div style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
       <TopNav morningDone={morningDone} eveningDone={eveningDone} profile={profile} userId={user.id} />
 
-      <main style={{ maxWidth: '680px', margin: '0 auto', padding: '48px 40px' }}>
+      <main className="checkin-main">
         {alreadyDone ? (
           <div style={{
             background: 'var(--bg-card)', border: '0.5px solid var(--border-color)',

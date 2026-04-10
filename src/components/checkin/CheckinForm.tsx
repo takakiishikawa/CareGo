@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Smile, Tag, NotebookPen, Loader2 } from 'lucide-react';
+import { Smile, Tag, NotebookPen, Loader2, Activity } from 'lucide-react';
 import MoodSelector from './MoodSelector';
 import EmotionTags from './EmotionTags';
+import ActivityTags from './ActivityTags';
+import { createClient } from '@/lib/supabase/client';
 
 interface CheckinFormProps {
   timing: 'morning' | 'evening';
@@ -14,6 +16,8 @@ export default function CheckinForm({ timing }: CheckinFormProps) {
   const router = useRouter();
   const [moodScore, setMoodScore] = useState<number | null>(null);
   const [emotionTags, setEmotionTags] = useState<string[]>([]);
+  const [activityTags, setActivityTags] = useState<string[]>([]);
+  const [userActivityTags, setUserActivityTags] = useState<string[]>([]);
   const [freeText, setFreeText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,6 +27,29 @@ export default function CheckinForm({ timing }: CheckinFormProps) {
   const greeting = timing === 'morning'
     ? 'おはようございます。今朝の状態は？'
     : 'お疲れさまでした。今日一日はどうでしたか？';
+
+  const activityLabel = timing === 'morning' ? '昨夜の活動' : '今日の活動';
+
+  // ユーザーのカスタム活動タグを取得
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from('user_tags')
+      .select('tag_name')
+      .eq('tag_type', timing === 'morning' ? 'morning_activity' : 'evening_activity')
+      .then(({ data }) => {
+        if (data) setUserActivityTags(data.map(r => r.tag_name));
+      });
+  }, [timing]);
+
+  const handleAddUserTag = async (tag: string) => {
+    setUserActivityTags(prev => [...prev, tag]);
+    const supabase = createClient();
+    await supabase.from('user_tags').insert({
+      tag_name: tag,
+      tag_type: timing === 'morning' ? 'morning_activity' : 'evening_activity',
+    });
+  };
 
   const isValid = moodScore !== null && emotionTags.length > 0;
 
@@ -34,7 +61,13 @@ export default function CheckinForm({ timing }: CheckinFormProps) {
       const res = await fetch('/api/checkin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ timing, mood_score: moodScore, emotion_tags: emotionTags, free_text: freeText || null }),
+        body: JSON.stringify({
+          timing,
+          mood_score: moodScore,
+          emotion_tags: emotionTags,
+          activity_tags: activityTags,
+          free_text: freeText || null,
+        }),
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || '送信に失敗しました'); return; }
@@ -62,7 +95,7 @@ export default function CheckinForm({ timing }: CheckinFormProps) {
         </p>
       </div>
 
-      <div style={{
+      <div className="checkin-card" style={{
         background: 'var(--bg-card)', border: '0.5px solid var(--border-color)',
         borderRadius: '14px', padding: '32px',
         boxShadow: 'var(--shadow-card)',
@@ -92,6 +125,25 @@ export default function CheckinForm({ timing }: CheckinFormProps) {
             <span style={{ fontWeight: 400, color: 'var(--text-placeholder)', fontSize: '13px' }}>複数選択可</span>
           </label>
           <EmotionTags selected={emotionTags} onChange={setEmotionTags} />
+        </section>
+
+        {/* 活動タグ */}
+        <section style={{ marginBottom: '28px' }}>
+          <label style={{
+            display: 'flex', alignItems: 'center', gap: '7px',
+            fontSize: '14px', fontWeight: 500, color: 'var(--text-secondary)', marginBottom: '14px',
+          }}>
+            <Activity size={15} strokeWidth={2} color="var(--accent-amber)" />
+            {activityLabel}
+            <span style={{ fontWeight: 400, color: 'var(--text-placeholder)', fontSize: '13px' }}>複数選択可・任意</span>
+          </label>
+          <ActivityTags
+            timing={timing}
+            selected={activityTags}
+            onChange={setActivityTags}
+            userTags={userActivityTags}
+            onAddUserTag={handleAddUserTag}
+          />
         </section>
 
         {/* 自由テキスト */}
