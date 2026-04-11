@@ -8,7 +8,9 @@ interface Section {
 }
 
 function parseComment(comment: string): Section[] | null {
-  const markers = ['今日の状態', '気づき', '提案'];
+  // 「今の状態」「今日の状態」どちらも受け付ける
+  const firstLabel = comment.includes('【今の状態】') ? '今の状態' : '今日の状態';
+  const markers = [firstLabel, '気づき', '提案'];
   const result: Section[] = [];
 
   for (let i = 0; i < markers.length; i++) {
@@ -20,7 +22,9 @@ function parseComment(comment: string): Section[] | null {
     const nextPos = nextMarker ? comment.indexOf(nextMarker) : -1;
     const contentEnd = nextPos !== -1 ? nextPos : comment.length;
     const text = comment.slice(contentStart, contentEnd).trim();
-    if (text) result.push({ label: markers[i], text });
+    // 表示ラベルは「今の状態」に統一
+    const displayLabel = markers[i] === '今日の状態' ? '今の状態' : markers[i];
+    if (text) result.push({ label: displayLabel, text });
   }
 
   return result.length >= 2 ? result : null;
@@ -33,6 +37,7 @@ interface CareCommentProps {
 }
 
 const SECTION_COLORS: Record<string, { bg: string; border: string; label: string }> = {
+  '今の状態':   { bg: 'var(--bg-subtle)', border: 'var(--border-muted)',  label: 'var(--text-muted)' },
   '今日の状態': { bg: 'var(--bg-subtle)', border: 'var(--border-muted)',  label: 'var(--text-muted)' },
   '気づき':     { bg: 'var(--bg-blue)',   border: 'var(--border-blue)',   label: '#2980B9' },
   '提案':       { bg: 'var(--bg-green)',  border: 'var(--border-green)',  label: 'var(--text-green-dark)' },
@@ -71,28 +76,34 @@ export default function CareComment({ comment, compact = false }: CareCommentPro
         <Sparkles size={12} strokeWidth={2} />
         ひとこと
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: compact ? '8px' : '10px' }}>
-        {sections.map(({ label, text }) => {
-          const colors = SECTION_COLORS[label] ?? SECTION_COLORS['今日の状態'];
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {sections.map(({ label, text }, idx) => {
+          const colors = SECTION_COLORS[label] ?? SECTION_COLORS['今の状態'];
+          const isFirst = idx === 0;
           return (
-            <div key={label} style={{
-              background: colors.bg,
-              border: `0.5px solid ${colors.border}`,
-              borderRadius: '10px',
-              padding: compact ? '10px 14px' : '14px 16px',
-            }}>
+            <div key={label}>
+              {!isFirst && (
+                <div style={{ height: '0.5px', background: 'var(--border-color)', margin: compact ? '8px 0' : '10px 0' }} />
+              )}
               <div style={{
-                fontSize: '11px', fontWeight: 700, letterSpacing: '0.04em',
-                color: colors.label, marginBottom: '5px', textTransform: 'uppercase',
+                background: colors.bg,
+                border: `0.5px solid ${colors.border}`,
+                borderRadius: '10px',
+                padding: compact ? '10px 14px' : '14px 16px',
               }}>
-                {label}
+                <div style={{
+                  fontSize: '11px', fontWeight: 700, letterSpacing: '0.04em',
+                  color: colors.label, marginBottom: '5px', textTransform: 'uppercase',
+                }}>
+                  {label}
+                </div>
+                <p style={{
+                  fontSize: compact ? '13px' : '14px',
+                  color: 'var(--text-secondary)', lineHeight: 1.75, margin: 0,
+                }}>
+                  {text}
+                </p>
               </div>
-              <p style={{
-                fontSize: compact ? '13px' : '14px',
-                color: 'var(--text-secondary)', lineHeight: 1.75, margin: 0,
-              }}>
-                {text}
-              </p>
             </div>
           );
         })}
