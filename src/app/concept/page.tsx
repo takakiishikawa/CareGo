@@ -44,6 +44,8 @@ export default async function ConceptPage() {
     fontSize: '16px',
     color: 'var(--text-secondary)',
     lineHeight: 1.85,
+    wordBreak: 'keep-all',
+    overflowWrap: 'break-word',
   };
 
   // ユーザーストーリーモデル
@@ -63,7 +65,7 @@ export default async function ConceptPage() {
     <div style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
       <TopNav morningDone={morningDone} eveningDone={eveningDone} profile={profile} userId={user.id} />
 
-      <main style={{ maxWidth: '820px', margin: '0 auto', padding: '52px 40px 80px' }}>
+      <main className="concept-main">
 
         {/* ドキュメントヘッダー */}
         <section style={{ marginBottom: '56px' }}>
@@ -101,7 +103,7 @@ export default async function ConceptPage() {
         {/* プロダクトスコープ */}
         <section style={{ marginBottom: '48px' }}>
           <p style={sectionLabel}>プロダクトスコープ</p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          <div className="concept-scope-grid">
             <div style={{ ...card, borderTop: '3px solid var(--accent-green)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
                 <CircleCheck size={18} strokeWidth={2} color="var(--accent-green)" />
@@ -142,7 +144,7 @@ export default async function ConceptPage() {
               <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-placeholder)', letterSpacing: '0.06em', marginBottom: '12px', textTransform: 'uppercase' }}>
                 毎日
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', alignItems: 'center', gap: '8px' }}>
+              <div className="concept-flow-grid">
                 {dailySteps.map((step, i) => (
                   <>
                     <div key={step.label} style={{
@@ -151,12 +153,14 @@ export default async function ConceptPage() {
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                         {step.icon}
-                        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)' }}>{step.label}</span>
+                        <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)', wordBreak: 'keep-all' }}>{step.label}</span>
                       </div>
-                      <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>{step.sub}</p>
+                      <p style={{ fontSize: '14px', color: 'var(--text-muted)', margin: 0, lineHeight: 1.5, wordBreak: 'keep-all' }}>{step.sub}</p>
                     </div>
                     {i < dailySteps.length - 1 && (
-                      <ArrowRight key={`arrow-d-${i}`} size={14} strokeWidth={2} color="var(--border-muted)" />
+                      <span key={`arrow-d-${i}`} className="flow-arrow" style={{ display: 'flex', justifyContent: 'center' }}>
+                        <ArrowRight size={14} strokeWidth={2} color="var(--border-muted)" />
+                      </span>
                     )}
                   </>
                 ))}
@@ -171,7 +175,7 @@ export default async function ConceptPage() {
               <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-placeholder)', letterSpacing: '0.06em', marginBottom: '12px', textTransform: 'uppercase' }}>
                 毎週（日曜日）
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr auto 1fr', alignItems: 'center', gap: '8px' }}>
+              <div className="concept-flow-grid">
                 {weeklySteps.map((step, i) => (
                   <>
                     <div key={step.label} style={{
@@ -180,12 +184,14 @@ export default async function ConceptPage() {
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                         {step.icon}
-                        <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)' }}>{step.label}</span>
+                        <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)', wordBreak: 'keep-all' }}>{step.label}</span>
                       </div>
-                      <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: 0, lineHeight: 1.5 }}>{step.sub}</p>
+                      <p style={{ fontSize: '14px', color: 'var(--text-muted)', margin: 0, lineHeight: 1.5, wordBreak: 'keep-all' }}>{step.sub}</p>
                     </div>
                     {i < weeklySteps.length - 1 && (
-                      <ArrowRight key={`arrow-w-${i}`} size={14} strokeWidth={2} color="var(--border-muted)" />
+                      <span key={`arrow-w-${i}`} className="flow-arrow" style={{ display: 'flex', justifyContent: 'center' }}>
+                        <ArrowRight size={14} strokeWidth={2} color="var(--border-muted)" />
+                      </span>
                     )}
                   </>
                 ))}
@@ -199,7 +205,7 @@ export default async function ConceptPage() {
           <p style={sectionLabel}>指標</p>
           <div style={card}>
             {/* 行動指標 → 結果指標 フロー */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: '20px' }}>
+            <div className="concept-metrics-grid">
 
               {/* 行動指標 */}
               <div>
@@ -232,7 +238,7 @@ export default async function ConceptPage() {
               </div>
 
               {/* 矢印 */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+              <div className="metrics-arrow" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
                 <ArrowRight size={18} strokeWidth={1.8} color="var(--border-muted)" />
                 <div style={{ fontSize: '10px', color: 'var(--text-placeholder)', textAlign: 'center', lineHeight: 1.4, maxWidth: '48px' }}>
                   継続で

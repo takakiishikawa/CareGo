@@ -8,7 +8,7 @@ interface ScoreLineChartProps {
 }
 
 const W = 480;
-const H = 220;
+const H = 330;
 const PAD = { top: 18, right: 10, bottom: 28, left: 10 };
 const CHART_W = W - PAD.left - PAD.right;
 const CHART_H = H - PAD.top - PAD.bottom;

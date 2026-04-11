@@ -186,6 +186,49 @@ body {
   justify-content: space-between;
 }
 
+/* コンセプトページ */
+.concept-main {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 52px 40px 80px;
+}
+
+.concept-scope-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.concept-flow-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+}
+
+.concept-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 20px;
+}
+
+/* チェックインボタン */
+.nav-checkin-link {
+  background: var(--accent-green);
+  color: white;
+  border-radius: 10px;
+  padding: 7px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
 @media (max-width: 640px) {
   .nav-inner {
     padding: 0 16px;
@@ -196,5 +239,34 @@ body {
   }
   .checkin-card {
     padding: 20px 16px !important;
+  }
+  .nav-checkin-link {
+    padding: 7px 12px;
+    font-size: 13px;
+    gap: 4px;
+  }
+  .nav-checkin-link .nav-checkin-icon {
+    display: none;
+  }
+  .concept-main {
+    padding: 28px 16px 60px;
+  }
+  .concept-scope-grid {
+    grid-template-columns: 1fr;
+  }
+  .concept-flow-grid {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .concept-flow-grid .flow-arrow {
+    transform: rotate(90deg);
+    justify-self: center;
+  }
+  .concept-metrics-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .concept-metrics-grid .metrics-arrow {
+    display: none;
   }
 }

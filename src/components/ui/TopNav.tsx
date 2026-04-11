@@ -97,18 +97,14 @@ export default function TopNav({ morningDone, eveningDone, profile, userId }: To
             </button>
 
             {pathname !== '/checkin' && (
-              <Link href="/checkin" style={{
-                background: 'var(--accent-green)', color: 'white', borderRadius: '10px',
-                padding: '7px 14px', fontSize: '14px', fontWeight: 500,
-                textDecoration: 'none', transition: 'all 0.15s ease',
-                display: 'inline-flex', alignItems: 'center', gap: '6px',
-              }}
+              <Link href="/checkin"
+                className="nav-checkin-link"
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--accent-green-hover)'; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--accent-green)'; }}
                 onMouseDown={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(0.97)'; }}
                 onMouseUp={e => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; }}
               >
-                <PenLine size={14} strokeWidth={2} />
+                <span className="nav-checkin-icon"><PenLine size={14} strokeWidth={2} /></span>
                 チェックイン
               </Link>
             )}
