@@ -33,9 +33,9 @@ interface CareCommentProps {
 }
 
 const SECTION_COLORS: Record<string, { bg: string; border: string; label: string }> = {
-  '今日の状態': { bg: 'var(--bg-green)', border: 'var(--border-green)', label: 'var(--text-green-dark)' },
-  '気づき':     { bg: 'var(--bg-blue)',  border: 'var(--border-blue)',  label: '#2980B9' },
-  '提案':       { bg: 'var(--bg-amber)', border: 'var(--border-amber)', label: 'var(--text-amber-dark)' },
+  '今日の状態': { bg: 'var(--bg-subtle)', border: 'var(--border-muted)',  label: 'var(--text-muted)' },
+  '気づき':     { bg: 'var(--bg-blue)',   border: 'var(--border-blue)',   label: '#2980B9' },
+  '提案':       { bg: 'var(--bg-green)',  border: 'var(--border-green)',  label: 'var(--text-green-dark)' },
 };
 
 export default function CareComment({ comment, compact = false }: CareCommentProps) {

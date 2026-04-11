@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { Sun, Moon, TrendingUp, Wind } from 'lucide-react';
+import { TrendingUp, Wind } from 'lucide-react';
 import CareComment from '@/components/ui/CareComment';
 import TopNav from '@/components/ui/TopNav';
 import ScoreLineChart from '@/components/dashboard/ScoreLineChart';
@@ -47,29 +47,28 @@ export default async function DashboardPage() {
   const { data: weeklyInsight } = await supabase
     .from('weekly_insights').select('*').eq('week_start', weekStartStr).single();
 
-  // 今日
+  // 今日：最新チェックイン（夜 > 朝）
   const todayCheckins = (checkins || []).filter(c => c.checked_at.startsWith(today));
   const morningCheckin = todayCheckins.find(c => c.timing === 'morning');
   const eveningCheckin = todayCheckins.find(c => c.timing === 'evening');
   const latestCheckin = eveningCheckin || morningCheckin;
-  const ms = morningCheckin?.condition_score ?? null;
-  const es = eveningCheckin?.condition_score ?? null;
-  const todayScore = ms !== null && es !== null ? Math.round((ms + es) / 2) : ms ?? es ?? null;
+  const todayScore = latestCheckin?.condition_score ?? null;
 
-  // 昨日
+  // 昨日：最新チェックイン（夜 > 朝）
   const yesterdayStr = last7Days[last7Days.length - 2];
   const yesterdayCheckins = (checkins || []).filter(c => c.checked_at.startsWith(yesterdayStr));
-  const ym = yesterdayCheckins.find(c => c.timing === 'morning')?.condition_score ?? null;
-  const ye = yesterdayCheckins.find(c => c.timing === 'evening')?.condition_score ?? null;
-  const yesterdayScore = ym !== null && ye !== null ? Math.round((ym + ye) / 2) : ym ?? ye ?? null;
+  const yesterdayLatest =
+    yesterdayCheckins.find(c => c.timing === 'evening') ||
+    yesterdayCheckins.find(c => c.timing === 'morning');
+  const yesterdayScore = yesterdayLatest?.condition_score ?? null;
   const scoreDiff = todayScore !== null && yesterdayScore !== null ? todayScore - yesterdayScore : null;
 
-  // 7日間データ
+  // 7日間データ：1日1スコア（最新チェックインのスコア）
   const scoreData: DailyScore[] = last7Days.map(date => {
     const day = (checkins || []).filter(c => c.checked_at.startsWith(date));
     const m = day.find(c => c.timing === 'morning')?.condition_score ?? null;
     const e = day.find(c => c.timing === 'evening')?.condition_score ?? null;
-    const score = m !== null && e !== null ? Math.round((m + e) / 2) : m ?? e ?? null;
+    const score = e ?? m;
     return { date, score, morning_score: m, evening_score: e };
   });
 
@@ -91,11 +90,13 @@ export default async function DashboardPage() {
     ? Math.round(prevValidScores.reduce((a, b) => a + b, 0) / prevValidScores.length)
     : null;
 
+  // 今週の瞑想合計
+  const totalMeditations = meditationData.reduce((sum, d) => sum + d.count, 0);
+
   const window_ = getCheckinWindow();
   const showMorningCTA = window_ === 'morning' && !morningCheckin;
   const showEveningCTA = window_ === 'evening' && !eveningCheckin;
   const showCTA = showMorningCTA || showEveningCTA;
-
   const ctaLabel = showMorningCTA ? '朝のチェックイン' : '夜のチェックイン';
 
   const uniqueDays = new Set((checkins || []).map(c => c.checked_at.split('T')[0])).size;
@@ -105,6 +106,8 @@ export default async function DashboardPage() {
     : scoreDiff > 0 ? 'var(--accent-green)'
     : scoreDiff < 0 ? 'var(--accent-amber)'
     : 'var(--text-placeholder)';
+
+  const weekDiff = thisWeekAvg !== null && lastWeekAvg !== null ? thisWeekAvg - lastWeekAvg : null;
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
@@ -120,136 +123,149 @@ export default async function DashboardPage() {
           />
         )}
 
-        {/* 本日のコンディション */}
-        <div style={{
-          background: 'var(--bg-card)', border: '0.5px solid var(--border-color)',
-          borderRadius: '14px', padding: '28px 28px 24px',
-          boxShadow: 'var(--shadow-card)', marginBottom: '20px',
-        }}>
-          <div style={{
-            fontSize: '13px', color: 'var(--text-placeholder)', fontWeight: 500,
-            marginBottom: '20px',
-          }}>
-            本日のコンディション
-          </div>
+        {/* 上段：本日のコンディション | 瞑想回数 */}
+        <div className="dashboard-top-grid">
 
-          {morningCheckin || eveningCheckin ? (
-            <>
-              {/* ① 今日のスコア（大） */}
-              <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                <div style={{
-                  fontSize: '72px', fontWeight: 700, lineHeight: 1,
-                  color: todayScore !== null ? 'var(--text-green-dark)' : 'var(--border-muted)',
-                  letterSpacing: '-2px',
-                }}>
-                  {todayScore ?? '–'}
-                </div>
-                {scoreDiff !== null && (
-                  <div style={{
-                    fontSize: '15px', fontWeight: 600, marginTop: '8px',
-                    color: diffColor,
-                  }}>
-                    {scoreDiff > 0 ? `▲ +${scoreDiff}` : scoreDiff < 0 ? `▼ ${scoreDiff}` : '±0'}
-                    <span style={{ fontSize: '12px', fontWeight: 400, color: 'var(--text-placeholder)', marginLeft: '6px' }}>前日比</span>
-                  </div>
-                )}
-              </div>
-
-              {/* ② 朝・夜の内訳（横並び） */}
-              <div style={{
-                display: 'flex', justifyContent: 'center', gap: '12px',
-                marginBottom: latestCheckin?.ai_comment ? '20px' : '0',
-              }}>
-                {([
-                  { Icon: Sun, label: '朝', score: ms },
-                  { Icon: Moon, label: '夜', score: es },
-                ] as const).map(({ Icon, label, score }) => (
-                  <div key={label} style={{
-                    display: 'flex', alignItems: 'center', gap: '8px',
-                    padding: '8px 18px', borderRadius: '10px',
-                    background: 'var(--bg-subtle)',
-                    border: '0.5px solid var(--border-color)',
-                  }}>
-                    <Icon size={13} strokeWidth={2} color="var(--text-placeholder)" />
-                    <span style={{ fontSize: '12px', color: 'var(--text-placeholder)' }}>{label}</span>
-                    <span style={{
-                      fontSize: '22px', fontWeight: 600, lineHeight: 1,
-                      color: score !== null ? 'var(--text-primary)' : 'var(--border-muted)',
-                    }}>
-                      {score ?? '–'}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* ③ ひとこと */}
-              {latestCheckin?.ai_comment && (
-                <div style={{ borderTop: '0.5px solid var(--border-color)', paddingTop: '16px' }}>
-                  <CareComment comment={latestCheckin.ai_comment} compact />
-                </div>
-              )}
-            </>
-          ) : (
-            <div style={{ textAlign: 'center', padding: '16px 0', fontSize: '14px', color: 'var(--text-placeholder)' }}>
-              本日のチェックインはまだありません
-            </div>
-          )}
-        </div>
-
-        {/* グラフ行 */}
-        <div className="dashboard-grid">
+          {/* 本日のコンディション */}
           <div style={{
             background: 'var(--bg-card)', border: '0.5px solid var(--border-color)',
-            borderRadius: '14px', padding: '24px', boxShadow: 'var(--shadow-card)',
+            borderRadius: '12px', padding: '24px',
+            boxShadow: 'var(--shadow-card)',
+            display: 'flex', flexDirection: 'column',
+          }}>
+            <div style={{
+              fontSize: '13px', color: 'var(--text-placeholder)', fontWeight: 500,
+              marginBottom: '20px',
+            }}>
+              本日のコンディション
+            </div>
+
+            {latestCheckin ? (
+              <>
+                {/* スコア数値 + 前日比バッジ */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '6px' }}>
+                  <div style={{
+                    fontSize: '80px', fontWeight: 700, lineHeight: 1,
+                    color: 'var(--text-green-dark)',
+                    letterSpacing: '-3px',
+                  }}>
+                    {todayScore ?? '–'}
+                  </div>
+                  {scoreDiff !== null && (
+                    <div style={{
+                      fontSize: '15px', fontWeight: 600,
+                      color: diffColor,
+                      display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '2px',
+                    }}>
+                      <span>{scoreDiff > 0 ? `▲ +${scoreDiff}` : scoreDiff < 0 ? `▼ ${scoreDiff}` : '±0'}</span>
+                      <span style={{ fontSize: '11px', fontWeight: 400, color: 'var(--text-placeholder)' }}>前日比</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* 今週平均 + 先週比 インライン */}
+                <div style={{
+                  fontSize: '13px', color: 'var(--text-placeholder)',
+                  marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px',
+                }}>
+                  {thisWeekAvg !== null && (
+                    <>
+                      <span>
+                        今週平均:{' '}
+                        <span style={{ fontWeight: 600, color: 'var(--text-green)' }}>{thisWeekAvg}</span>
+                      </span>
+                      {weekDiff !== null && (
+                        <span style={{
+                          fontWeight: 600,
+                          color: weekDiff > 0 ? 'var(--accent-green)' : weekDiff < 0 ? 'var(--accent-amber)' : 'var(--text-placeholder)',
+                        }}>
+                          先週比 {weekDiff > 0 ? `+${weekDiff}` : weekDiff === 0 ? '±0' : weekDiff}
+                        </span>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                {/* ひとこと */}
+                {latestCheckin.ai_comment && (
+                  <div style={{ borderTop: '0.5px solid var(--border-color)', paddingTop: '16px', flex: 1 }}>
+                    <CareComment comment={latestCheckin.ai_comment} compact />
+                  </div>
+                )}
+              </>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '24px 0', fontSize: '14px', color: 'var(--text-placeholder)' }}>
+                本日のチェックインはまだありません
+              </div>
+            )}
+          </div>
+
+          {/* 瞑想回数 */}
+          <div style={{
+            background: 'var(--bg-card)', border: '0.5px solid var(--border-color)',
+            borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow-card)',
+            display: 'flex', flexDirection: 'column',
           }}>
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              marginBottom: '20px',
+              marginBottom: '16px',
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '14px', color: 'var(--text-placeholder)', fontWeight: 500 }}>
-                <TrendingUp size={15} strokeWidth={2} color="var(--text-placeholder)" />
-                コンディションスコア（7日間）
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '7px',
+                fontSize: '13px', color: 'var(--text-placeholder)', fontWeight: 500,
+              }}>
+                <Wind size={14} strokeWidth={2} color="var(--text-placeholder)" />
+                瞑想（7日間）
               </div>
-              {thisWeekAvg !== null && lastWeekAvg !== null && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
-                  <span style={{ color: 'var(--text-placeholder)' }}>
-                    今週 <span style={{ color: 'var(--text-green)', fontWeight: 600 }}>{thisWeekAvg}</span>
-                  </span>
-                  <span style={{ color: 'var(--text-placeholder)' }}>
-                    先週 <span style={{ fontWeight: 500 }}>{lastWeekAvg}</span>
-                  </span>
-                  {(() => {
-                    const d = thisWeekAvg - lastWeekAvg;
-                    if (d === 0) return null;
-                    return (
-                      <span style={{
-                        fontWeight: 600,
-                        color: d > 0 ? 'var(--accent-green)' : 'var(--accent-amber)',
-                        fontSize: '12px',
-                      }}>
-                        ({d > 0 ? `+${d}` : d})
-                      </span>
-                    );
-                  })()}
-                </div>
-              )}
+              <div style={{ fontSize: '13px', color: 'var(--text-placeholder)' }}>
+                今週{' '}
+                <span style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '15px' }}>
+                  {totalMeditations}
+                </span>
+                回
+              </div>
             </div>
-            <ScoreLineChart data={scoreData} />
+            <div style={{ flex: 1 }}>
+              <MeditationLineChart data={meditationData} />
+            </div>
           </div>
+        </div>
 
+        {/* コンディションスコアグラフ（フルワイド） */}
+        <div style={{
+          background: 'var(--bg-card)', border: '0.5px solid var(--border-color)',
+          borderRadius: '12px', padding: '24px', boxShadow: 'var(--shadow-card)',
+          marginBottom: '16px',
+        }}>
           <div style={{
-            background: 'var(--bg-card)', border: '0.5px solid var(--border-color)',
-            borderRadius: '14px', padding: '24px', boxShadow: 'var(--shadow-card)',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            marginBottom: '20px',
           }}>
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: '7px',
-              fontSize: '14px', color: 'var(--text-placeholder)', marginBottom: '20px', fontWeight: 500,
-            }}>
-              <Wind size={15} strokeWidth={2} color="var(--text-placeholder)" />
-              瞑想回数（7日間）
+            <div style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '13px', color: 'var(--text-placeholder)', fontWeight: 500 }}>
+              <TrendingUp size={14} strokeWidth={2} color="var(--text-placeholder)" />
+              コンディションスコア（7日間）
             </div>
-            <MeditationLineChart data={meditationData} />
+            {thisWeekAvg !== null && lastWeekAvg !== null && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px' }}>
+                <span style={{ color: 'var(--text-placeholder)' }}>
+                  今週 <span style={{ color: 'var(--text-green)', fontWeight: 600 }}>{thisWeekAvg}</span>
+                </span>
+                <span style={{ color: 'var(--text-placeholder)' }}>
+                  先週 <span style={{ fontWeight: 500 }}>{lastWeekAvg}</span>
+                </span>
+                {weekDiff !== null && weekDiff !== 0 && (
+                  <span style={{
+                    fontWeight: 600,
+                    color: weekDiff > 0 ? 'var(--accent-green)' : 'var(--accent-amber)',
+                    fontSize: '12px',
+                  }}>
+                    ({weekDiff > 0 ? `+${weekDiff}` : weekDiff})
+                  </span>
+                )}
+              </div>
+            )}
           </div>
+          <ScoreLineChart data={scoreData} />
         </div>
 
         {/* 週次インサイト */}

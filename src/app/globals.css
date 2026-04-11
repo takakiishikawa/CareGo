@@ -45,9 +45,9 @@
 /* ── Light mode (default) ── */
 :root {
   /* Backgrounds */
-  --bg-page:   #F8F6F2;
+  --bg-page:   #F5F3EE;
   --bg-card:   #FFFFFF;
-  --bg-subtle: #F8F6F2;
+  --bg-subtle: #F5F3EE;
   --bg-muted:  #EEECE8;
   --bg-green:  #E8F5EF;
   --bg-amber:  #FDF3E3;
@@ -73,10 +73,10 @@
   --border-blue:   #AED6F1;
 
   /* Accent (interactive) */
-  --accent-green:       #2D8A5F;
-  --accent-green-hover: #1A5C3E;
-  --accent-amber:       #C07818;
-  --accent-amber-hover: #7A4C0A;
+  --accent-green:       #1D9E75;
+  --accent-green-hover: #15795A;
+  --accent-amber:       #EF9F27;
+  --accent-amber-hover: #C07818;
 
   /* Shadows */
   --shadow-card:     0 1px 3px rgba(0,0,0,0.06);
@@ -165,8 +165,16 @@ body {
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 20px;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.dashboard-top-grid {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 16px;
+  margin-bottom: 16px;
+  align-items: stretch;
 }
 
 @media (max-width: 768px) {
@@ -177,6 +185,9 @@ body {
     padding: 24px 16px;
   }
   .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-top-grid {
     grid-template-columns: 1fr;
   }
 }
