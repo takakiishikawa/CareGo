@@ -9,6 +9,7 @@ const MORNING_TAGS = [
 
 const EVENING_TAGS = [
   'ジム', '瞑想', '友人と会った', 'お笑い動画', '散歩', 'バイク', '好きな音楽', '飲酒', '仕事', 'オフィス出社',
+  'AIで遊ぶ', 'AIプロダクト開発', '英会話', '英語練習', 'ポッドキャストを聴いた', 'サウナ・マッサージ',
 ];
 
 interface ActivityTagsProps {
