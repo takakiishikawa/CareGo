@@ -10,7 +10,7 @@ export default function MeditationDots({ data }: MeditationDotsProps) {
   const today = new Date().toISOString().split('T')[0];
 
   return (
-    <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+    <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', paddingBottom: '4px', overflow: 'visible' }}>
       {data.map(d => {
         const isToday = d.date === today;
         const date = new Date(d.date + 'T00:00:00');

@@ -5,6 +5,7 @@ import { DailyScore } from '@/lib/types';
 
 interface ScoreLineChartProps {
   data: DailyScore[];
+  fillHeight?: boolean;
 }
 
 const W = 480;
@@ -21,7 +22,7 @@ function xPos(i: number, total: number): number {
 
 interface HoveredPoint { x: number; y: number; value: number; label: string }
 
-export default function ScoreLineChart({ data }: ScoreLineChartProps) {
+export default function ScoreLineChart({ data, fillHeight = false }: ScoreLineChartProps) {
   const today = new Date().toISOString().split('T')[0];
   const [hovered, setHovered] = useState<HoveredPoint | null>(null);
 
@@ -55,7 +56,7 @@ export default function ScoreLineChart({ data }: ScoreLineChartProps) {
 
   return (
     <div>
-      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', overflow: 'visible' }}>
+      <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: fillHeight ? '100%' : 'auto', overflow: 'visible' }}>
         <defs>
           <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" style={{ stopColor: 'var(--accent-green)', stopOpacity: 0.20 }} />

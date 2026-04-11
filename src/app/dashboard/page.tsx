@@ -137,14 +137,14 @@ export default async function DashboardPage() {
 
           {/* 左：本日のコンディション */}
           <div style={cardStyle}>
-            <div style={{ fontSize: '14px', color: 'var(--text-placeholder)', fontWeight: 500, marginBottom: '20px' }}>
+            <div style={{ fontSize: '14px', color: 'var(--text-placeholder)', fontWeight: 500, marginBottom: '12px' }}>
               本日のコンディション
             </div>
 
             {latestCheckin ? (
               <>
                 {/* スコア数値 + 前日比 */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '10px' }}>
                   <div style={{
                     fontSize: '80px', fontWeight: 700, lineHeight: 1,
                     color: 'var(--text-green-dark)', letterSpacing: '-3px',
@@ -164,14 +164,14 @@ export default async function DashboardPage() {
                 </div>
 
                 {/* 朝・夜バッジ */}
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '14px' }}>
                   {([
                     { Icon: Sun, label: '朝', score: ms },
                     { Icon: Moon, label: '夜', score: es },
                   ] as const).map(({ Icon, label, score }) => (
                     <div key={label} style={{
                       display: 'flex', alignItems: 'center', gap: '6px',
-                      padding: '6px 14px', borderRadius: '20px',
+                      padding: '5px 14px', borderRadius: '20px',
                       background: 'var(--bg-subtle)',
                       border: '0.5px solid var(--border-color)',
                     }}>
@@ -189,7 +189,7 @@ export default async function DashboardPage() {
 
                 {/* ひとこと */}
                 {latestCheckin.ai_comment && (
-                  <div style={{ borderTop: '0.5px solid var(--border-color)', paddingTop: '16px', flex: 1 }}>
+                  <div style={{ borderTop: '0.5px solid var(--border-color)', paddingTop: '14px', flex: 1 }}>
                     <CareComment comment={latestCheckin.ai_comment} compact />
                   </div>
                 )}
@@ -205,7 +205,7 @@ export default async function DashboardPage() {
           <div style={cardStyle}>
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              marginBottom: '16px',
+              marginBottom: '8px', flexShrink: 0,
             }}>
               <div style={{
                 display: 'flex', alignItems: 'center', gap: '7px',
@@ -233,14 +233,17 @@ export default async function DashboardPage() {
                 </div>
               )}
             </div>
-            <div style={{ flex: 1, overflow: 'visible' }}>
-              <ScoreLineChart data={scoreData} />
+            {/* グラフ：左カードと高さを合わせるため position:absolute で充填 */}
+            <div style={{ flex: 1, position: 'relative', minHeight: '200px' }}>
+              <div style={{ position: 'absolute', inset: 0 }}>
+                <ScoreLineChart data={scoreData} fillHeight />
+              </div>
             </div>
           </div>
         </div>
 
         {/* 下段：瞑想（ドット表示・全幅） */}
-        <div style={{ ...cardStyle, marginBottom: '16px' }}>
+        <div style={{ ...cardStyle, marginBottom: '16px', overflow: 'visible' }}>
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             marginBottom: '20px',
