@@ -134,7 +134,7 @@ export default function TopNav({ morningDone, eveningDone, profile, userId }: To
                     <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-green)' }}>{initials}</span>
                   )}
                 </div>
-                <span style={{ fontSize: '14px', color: 'var(--text-secondary)', fontWeight: 500, maxWidth: '80px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <span className="nav-profile-name" style={{ fontSize: '14px', color: 'var(--text-secondary)', fontWeight: 500, maxWidth: '80px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {profile?.display_name ?? 'メニュー'}
                 </span>
                 <ChevronDown

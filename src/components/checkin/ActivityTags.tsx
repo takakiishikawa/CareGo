@@ -4,7 +4,7 @@ import { useState, KeyboardEvent } from 'react';
 import { Plus } from 'lucide-react';
 
 const MORNING_TAGS = [
-  'よく眠れた', '睡眠が浅い', 'ポルノ', '飲酒', 'kindle', 'YouTube', '早めに寝た',
+  'ポルノ', '飲酒', 'kindle', 'YouTube', '友人とチャット',
 ];
 
 const EVENING_TAGS = [

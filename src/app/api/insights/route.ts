@@ -61,12 +61,22 @@ export async function POST() {
 
   const message = await anthropic.messages.create({
     model: 'claude-sonnet-4-5',
-    max_tokens: 400,
+    max_tokens: 600,
     messages: [{ role: 'user', content: summary }],
     system: `過去7日間のコンディションデータを分析して、ユーザーへの週次インサイトを日本語で返してください。
-コンディション評価の傾向・スコアの変化・活動との相関・気づきや提案を3〜5文で。
 ポジティブな視点を基本としつつ、正直に。
-テキストのみ返してください。`,
+必ず以下の形式で3つのセクションに分けて出力してください（ラベルをそのまま使用）：
+
+【今週のまとめ】
+平均スコアとチェックイン結果の要約を1〜2文で。
+
+【気づき】
+活動と体調の相関・傾向を1〜2文で。
+
+【来週への提案】
+具体的なアクションを1文で。
+
+ラベル行以外はプレーンテキストのみ返してください。`,
   });
 
   const insightContent = message.content[0];

@@ -10,7 +10,7 @@ interface ScoreLineChartProps {
 
 const W = 480;
 const H = 510;
-const PAD = { top: 18, right: 10, bottom: 36, left: 18 };
+const PAD = { top: 20, right: 10, bottom: 16, left: 28 };
 const CHART_W = W - PAD.left - PAD.right;
 const CHART_H = H - PAD.top - PAD.bottom;
 const TW = 56;
@@ -111,21 +111,6 @@ export default function ScoreLineChart({ data, fillHeight = false }: ScoreLineCh
                 onMouseLeave={() => setHovered(null)}
               />
             </g>
-          );
-        })}
-
-        {/* X軸ラベル */}
-        {data.map((d, i) => {
-          const x = xPos(i, data.length);
-          const isToday = d.date === today;
-          const date = new Date(d.date + 'T00:00:00');
-          const label = isToday ? '今日' : `${date.getMonth() + 1}/${date.getDate()}`;
-          return (
-            <text key={d.date} x={x} y={H - 4} textAnchor="middle" fontSize="14"
-              style={{ fill: isToday ? 'var(--accent-green)' : 'var(--text-placeholder)' }}
-              fontWeight={isToday ? '600' : '400'} fontFamily="DM Sans, system-ui, sans-serif">
-              {label}
-            </text>
           );
         })}
 

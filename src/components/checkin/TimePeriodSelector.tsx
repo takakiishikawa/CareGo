@@ -99,13 +99,11 @@ export default function TimePeriodSelector({ timing, ratings, onChange }: TimePe
                       boxShadow: isSelected ? `0 0 0 1.5px ${selectedBorder}` : 'none',
                       textAlign: 'center' as const,
                       lineHeight: 1.3,
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
+                      wordBreak: 'break-all' as const,
                     }}
                   >
                     <RIcon size={12} strokeWidth={2} color={isSelected ? selectedColor : 'var(--text-placeholder)'} />
-                    <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>{btnLabel}</span>
+                    <span style={{ minWidth: 0 }}>{btnLabel}</span>
                   </button>
                 );
               })}

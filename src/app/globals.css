@@ -253,6 +253,9 @@ body {
   .nav-checkin-status {
     display: none !important;
   }
+  .nav-profile-name {
+    display: none !important;
+  }
   .checkin-card {
     padding: 20px 16px !important;
   }
