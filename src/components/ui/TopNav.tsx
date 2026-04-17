@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { Sun, Moon, PenLine, LogOut, User, BookOpen, ChevronDown, BrainCircuit } from 'lucide-react';
+import { Sun, Moon, PenLine, LogOut, User, BookOpen, ChevronDown, BrainCircuit, LayoutGrid, ChevronUp } from 'lucide-react';
 import Logo from './Logo';
 import ProfileModal from './ProfileModal';
 import { useTheme } from './ThemeProvider';
@@ -21,12 +21,24 @@ interface TopNavProps {
   userId: string;
 }
 
+const GO_APPS = [
+  { name: 'NativeGo',   url: 'https://english-learning-app-black.vercel.app/',  color: '#E5484D' },
+  { name: 'CareGo',     url: 'https://care-go-mu.vercel.app/dashboard',          color: '#30A46C' },
+  { name: 'KenyakuGo',  url: 'https://kenyaku-go.vercel.app/',                   color: '#F5A623' },
+  { name: 'TaskGo',     url: 'https://taskgo-dun.vercel.app/',                   color: '#5E6AD2' },
+  { name: 'CookGo',     url: 'https://cook-go-lovat.vercel.app/dashboard',       color: '#1AD1A5' },
+  { name: 'PhysicalGo', url: 'https://physical-go.vercel.app/dashboard',         color: '#FF6B6B' },
+] as const;
+
+const CURRENT_APP = 'CareGo';
+
 export default function TopNav({ morningDone, eveningDone, profile, userId }: TopNavProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
   const [showProfile, setShowProfile] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showApps, setShowApps] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const initials = (profile?.display_name || 'U').charAt(0).toUpperCase();
@@ -187,7 +199,7 @@ export default function TopNav({ morningDone, eveningDone, profile, userId }: To
                   border: '1px solid var(--border-color)',
                   borderRadius: 'var(--radius-lg)',
                   boxShadow: 'var(--shadow-dropdown)',
-                  width: '192px', overflow: 'hidden', zIndex: 100,
+                  width: '210px', overflow: 'hidden', zIndex: 100,
                   animation: 'fadeInDown 0.15s ease',
                 }}>
                   <button onClick={() => { setMenuOpen(false); setShowProfile(true); }}
@@ -218,6 +230,82 @@ export default function TopNav({ morningDone, eveningDone, profile, userId }: To
                       コンセプト
                     </span>
                   </Link>
+
+                  {/* Goシリーズ アプリ切り替え */}
+                  <div style={{ borderTop: '1px solid var(--border-color)' }}>
+                    {/* アプリ一覧（上方向に展開） */}
+                    {showApps && (
+                      <div style={{ borderBottom: '1px solid var(--border-color)' }}>
+                        {GO_APPS.map(app => {
+                          const isCurrent = app.name === CURRENT_APP;
+                          return isCurrent ? (
+                            <div key={app.name} style={{
+                              display: 'flex', alignItems: 'center', gap: '10px',
+                              padding: '9px 16px',
+                              background: 'var(--bg-subtle)',
+                              cursor: 'default',
+                            }}>
+                              <span style={{
+                                width: '7px', height: '7px', borderRadius: '50%',
+                                background: app.color, flexShrink: 0,
+                                boxShadow: `0 0 0 2px ${app.color}33`,
+                              }} />
+                              <span style={{
+                                fontSize: '13px', fontWeight: 600,
+                                color: 'var(--text-secondary)', letterSpacing: '-0.01em', flex: 1,
+                              }}>
+                                {app.name}
+                              </span>
+                              <span style={{
+                                fontSize: '10px', fontWeight: 600, letterSpacing: '0.04em',
+                                color: app.color, background: `${app.color}18`,
+                                padding: '2px 7px', borderRadius: 'var(--radius-full)',
+                                border: `1px solid ${app.color}40`,
+                              }}>
+                                NOW
+                              </span>
+                            </div>
+                          ) : (
+                            <a key={app.name} href={app.url} style={{
+                              display: 'flex', alignItems: 'center', gap: '10px',
+                              padding: '9px 16px', textDecoration: 'none',
+                              color: 'var(--text-secondary)', transition: 'background 0.12s ease',
+                            }}
+                              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--bg-subtle)'; }}
+                              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                            >
+                              <span style={{
+                                width: '7px', height: '7px', borderRadius: '50%',
+                                background: app.color, flexShrink: 0,
+                              }} />
+                              <span style={{
+                                fontSize: '13px', fontWeight: 400,
+                                letterSpacing: '-0.01em',
+                              }}>
+                                {app.name}
+                              </span>
+                            </a>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* トリガーボタン */}
+                    <button
+                      onClick={() => setShowApps(v => !v)}
+                      style={{ ...itemStyle(false), width: '100%' }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--bg-subtle)'; }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                    >
+                      <span style={{ color: 'var(--text-placeholder)', display: 'flex' }}>
+                        <LayoutGrid size={14} strokeWidth={2} />
+                      </span>
+                      <span style={{ flex: 1 }}>Goシリーズ</span>
+                      <span style={{ color: 'var(--text-placeholder)', display: 'flex', transition: 'transform 0.15s ease', transform: showApps ? 'rotate(0deg)' : 'rotate(180deg)' }}>
+                        <ChevronUp size={13} strokeWidth={2} />
+                      </span>
+                    </button>
+                  </div>
 
                   <button onClick={handleSignOut}
                     style={{ ...itemStyle(true), borderTop: '1px solid var(--border-color)' }}
