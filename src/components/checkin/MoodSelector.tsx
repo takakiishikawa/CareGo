@@ -25,11 +25,11 @@ function MoodButton({ score, selected, onClick }: { score: number; selected: boo
       onMouseDown={() => setPressed(true)}
       onMouseUp={() => setPressed(false)}
       style={{
-        flex: 1, padding: '14px 6px 12px', borderRadius: '12px',
+        flex: 1, padding: '14px 6px 12px', borderRadius: 'var(--radius-lg)',
         border: selected
-          ? '2px solid var(--accent-green)'
-          : `0.5px solid ${hovered ? 'var(--border-color-hover)' : 'var(--border-color)'}`,
-        background: selected ? 'var(--bg-green)' : hovered ? 'var(--bg-subtle)' : 'var(--bg-card)',
+          ? '2px solid var(--color-primary)'
+          : `0.5px solid ${hovered ? 'var(--color-border-strong)' : 'var(--color-border-default)'}`,
+        background: selected ? 'var(--color-surface-subtle)' : hovered ? 'var(--color-surface-subtle)' : 'var(--color-surface)',
         cursor: 'pointer', textAlign: 'center',
         transform: pressed ? 'scale(0.96)' : 'scale(1)',
         transition: 'all 0.15s ease',
@@ -37,7 +37,7 @@ function MoodButton({ score, selected, onClick }: { score: number; selected: boo
       }}
     >
       <MoodFace score={score as 1|2|3|4|5} selected={selected} size={34} />
-      <div style={{ fontSize: '12px', fontWeight: 500, color: selected ? 'var(--text-green)' : 'var(--text-placeholder)' }}>
+      <div style={{ fontSize: '12px', fontWeight: 500, color: selected ? 'var(--color-primary)' : 'var(--color-text-subtle)' }}>
         {MOOD_LABELS[score]}
       </div>
     </button>

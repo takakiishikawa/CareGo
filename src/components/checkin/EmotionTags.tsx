@@ -3,12 +3,10 @@
 import { useState } from 'react';
 
 const EMOTION_TAGS = [
-  // ポジティブ
   '穏やか', 'リラックス', '落ち着いている', '前向き',
   'やる気がある', '集中できている', '自信がある', 'スッキリしている',
   '楽しい', '充実している', 'ワクワク', '感謝',
   '達成感', '希望がある', 'つながりを感じる',
-  // ネガティブ
   '疲れた', 'だるい', '眠い', '体が重い',
   '不安', 'モヤモヤ', '焦り', 'プレッシャー',
   'イライラ', '落ち込んでいる', '悲しい', '空虚', '孤独',
@@ -29,9 +27,9 @@ function TagButton({ label, selected, onClick }: { label: string; selected: bool
   const [hovered, setHovered] = useState(false);
   const isPositive = POSITIVE_TAGS.has(label);
 
-  const selectedBg = isPositive ? 'var(--bg-green)' : 'var(--bg-amber)';
-  const selectedBorder = isPositive ? 'var(--border-green)' : 'var(--border-amber)';
-  const selectedColor = isPositive ? 'var(--text-green-dark)' : 'var(--text-amber-dark)';
+  const selectedBg = isPositive ? 'var(--color-success-subtle)' : 'var(--color-warning-subtle)';
+  const selectedBorder = isPositive ? 'var(--color-success)' : 'var(--color-warning)';
+  const selectedColor = isPositive ? 'var(--color-success)' : 'var(--color-warning)';
 
   return (
     <button
@@ -43,15 +41,15 @@ function TagButton({ label, selected, onClick }: { label: string; selected: bool
         padding: '6px 14px', borderRadius: 'var(--radius-full)',
         border: selected
           ? `1.5px solid ${selectedBorder}`
-          : `1px solid ${hovered ? 'var(--border-color-hover)' : 'var(--border-color)'}`,
-        background: selected ? selectedBg : hovered ? 'var(--bg-subtle)' : 'transparent',
-        color: selected ? selectedColor : hovered ? 'var(--text-secondary)' : 'var(--text-muted)',
+          : `1px solid ${hovered ? 'var(--color-border-strong)' : 'var(--color-border-default)'}`,
+        background: selected ? selectedBg : hovered ? 'var(--color-surface-subtle)' : 'transparent',
+        color: selected ? selectedColor : hovered ? 'var(--color-text-secondary)' : 'var(--color-text-subtle)',
         fontSize: '13px', fontWeight: selected ? 600 : 400,
         cursor: 'pointer',
         transform: selected ? 'scale(1.02)' : 'scale(1)',
         transition: 'all 0.15s ease',
         letterSpacing: '-0.01em',
-        boxShadow: selected ? 'var(--shadow-xs)' : 'none',
+        boxShadow: selected ? 'var(--shadow-sm)' : 'none',
       }}
     >
       {label}

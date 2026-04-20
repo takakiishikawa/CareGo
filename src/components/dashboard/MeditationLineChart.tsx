@@ -46,7 +46,6 @@ export default function MeditationLineChart({ data }: MeditationLineChartProps) 
     + ` L ${points[points.length - 1].x.toFixed(1)} ${baseline}`
     + ` L ${points[0].x.toFixed(1)} ${baseline} Z`;
 
-  // グリッドライン
   const gridValues = maxCount >= 2 ? [Math.round(maxCount * 0.5), maxCount] : [maxCount];
 
   return (
@@ -54,29 +53,27 @@ export default function MeditationLineChart({ data }: MeditationLineChartProps) 
       <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', overflow: 'visible' }}>
         <defs>
           <linearGradient id="meditationGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" style={{ stopColor: 'var(--accent-amber)', stopOpacity: 0.20 }} />
-            <stop offset="100%" style={{ stopColor: 'var(--accent-amber)', stopOpacity: 0 }} />
+            <stop offset="0%" style={{ stopColor: 'var(--color-warning)', stopOpacity: 0.20 }} />
+            <stop offset="100%" style={{ stopColor: 'var(--color-warning)', stopOpacity: 0 }} />
           </linearGradient>
         </defs>
 
-        {/* グリッドライン */}
         {gridValues.map(v => (
           <g key={v}>
             <line
               x1={PAD.left} y1={yPos(v)} x2={W - PAD.right} y2={yPos(v)}
-              style={{ stroke: 'var(--chart-grid)' }} strokeWidth="1" strokeDasharray="4 4"
+              style={{ stroke: 'var(--color-border-subtle)' }} strokeWidth="1" strokeDasharray="4 4"
             />
             <text x={PAD.left - 4} y={yPos(v) + 4} textAnchor="end" fontSize="10"
-              style={{ fill: 'var(--text-placeholder)' }} fontFamily="DM Sans, system-ui, sans-serif">
+              style={{ fill: 'var(--color-text-subtle)' }} fontFamily="DM Sans, system-ui, sans-serif">
               {v}
             </text>
           </g>
         ))}
 
         <path d={areaPath} fill="url(#meditationGradient)" />
-        <path d={linePath} fill="none" style={{ stroke: 'var(--accent-amber)' }} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d={linePath} fill="none" style={{ stroke: 'var(--color-warning)' }} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
 
-        {/* ドット + ヒットエリア */}
         {points.map(p => {
           const isToday = p.date === today;
           const hasData = p.count > 0;
@@ -86,8 +83,8 @@ export default function MeditationLineChart({ data }: MeditationLineChartProps) 
             <g key={p.date}>
               <circle cx={p.x} cy={p.y} r={isToday ? 6.5 : 4.5}
                 style={{
-                  fill: hasData ? (isToday ? 'var(--accent-amber)' : 'var(--bg-card)') : 'var(--bg-muted)',
-                  stroke: hasData ? 'var(--accent-amber)' : 'var(--border-muted)',
+                  fill: hasData ? (isToday ? 'var(--color-warning)' : 'var(--color-surface)') : 'var(--color-surface-subtle)',
+                  stroke: hasData ? 'var(--color-warning)' : 'var(--color-border-default)',
                 }}
                 strokeWidth={isToday && hasData ? 0 : 2.5}
               />
@@ -99,7 +96,6 @@ export default function MeditationLineChart({ data }: MeditationLineChartProps) 
           );
         })}
 
-        {/* X軸ラベル */}
         {data.map((d, i) => {
           const x = xPos(i, data.length);
           const isToday = d.date === today;
@@ -107,14 +103,13 @@ export default function MeditationLineChart({ data }: MeditationLineChartProps) 
           const label = isToday ? '今日' : `${date.getMonth() + 1}/${date.getDate()}`;
           return (
             <text key={d.date} x={x} y={H - 4} textAnchor="middle" fontSize="11"
-              style={{ fill: isToday ? 'var(--accent-amber)' : 'var(--text-placeholder)' }}
+              style={{ fill: isToday ? 'var(--color-warning)' : 'var(--color-text-subtle)' }}
               fontWeight={isToday ? '600' : '400'} fontFamily="DM Sans, system-ui, sans-serif">
               {label}
             </text>
           );
         })}
 
-        {/* Tooltip */}
         {hovered && (() => {
           const tx = Math.min(Math.max(hovered.x - TW / 2, PAD.left), W - PAD.right - TW);
           const ty = hovered.y - TH - 10 < PAD.top ? hovered.y + 12 : hovered.y - TH - 10;
@@ -122,10 +117,10 @@ export default function MeditationLineChart({ data }: MeditationLineChartProps) 
           return (
             <g style={{ pointerEvents: 'none' }}>
               <rect x={tx} y={ty} width={TW} height={TH} rx={6}
-                style={{ fill: 'var(--bg-card)', stroke: 'var(--border-color)', strokeWidth: 0.5 }}
+                style={{ fill: 'var(--color-surface)', stroke: 'var(--color-border-default)', strokeWidth: 0.5 }}
               />
               <text x={tx + TW / 2} y={ty + TH / 2 + 4.5} textAnchor="middle" fontSize="12" fontWeight="700"
-                style={{ fill: 'var(--text-primary)' }} fontFamily="DM Sans, system-ui, sans-serif">
+                style={{ fill: 'var(--color-text-primary)' }} fontFamily="DM Sans, system-ui, sans-serif">
                 {text}
               </text>
             </g>
