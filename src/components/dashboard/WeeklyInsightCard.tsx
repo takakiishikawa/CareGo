@@ -1,4 +1,5 @@
 import { BrainCircuit, TrendingUp, Lightbulb, ArrowRight } from 'lucide-react';
+import { Card } from '@takaki/go-design-system';
 import { WeeklyInsight } from '@/lib/types';
 
 interface WeeklyInsightCardProps {
@@ -63,13 +64,7 @@ export default function WeeklyInsightCard({ insight, thisWeekAvg, lastWeekAvg }:
     : null;
 
   return (
-    <div style={{
-      background: 'var(--card)',
-      border: '1px solid var(--border)',
-      borderRadius: 'var(--radius-lg)',
-      padding: '24px',
-      boxShadow: 'var(--shadow-md)',
-    }}>
+    <Card className="p-6">
       {/* ヘッダー */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -182,6 +177,6 @@ export default function WeeklyInsightCard({ insight, thisWeekAvg, lastWeekAvg }:
           </p>
         </div>
       )}
-    </div>
+    </Card>
   );
 }

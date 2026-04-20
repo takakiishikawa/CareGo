@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Sparkles, X, Loader2 } from 'lucide-react';
 import { isSundayHCM } from '@/lib/timing';
-import { Button } from '@takaki/go-design-system';
+import { Button, Card } from '@takaki/go-design-system';
 
 interface InsightPopupProps {
   weekStartStr: string;
@@ -52,24 +52,15 @@ export default function InsightPopup({ weekStartStr, hasEnoughData }: InsightPop
       background: 'rgba(9,30,66,0.5)',
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px',
     }}>
-      <div style={{
-        background: 'var(--card)', borderRadius: 'var(--radius-lg)', padding: '40px 36px',
-        maxWidth: '400px', width: '100%',
-        boxShadow: 'var(--shadow-lg)',
-        border: '1px solid var(--border)',
-        position: 'relative',
-      }}>
-        <button
+      <Card className="relative max-w-[400px] w-full p-10">
+        <Button
           onClick={handleLater}
-          style={{
-            position: 'absolute', top: '16px', right: '16px',
-            background: 'none', border: 'none', cursor: 'pointer',
-            color: 'var(--color-text-subtle)', padding: '4px', borderRadius: 'var(--radius-md)',
-            display: 'flex', transition: 'all 0.15s ease',
-          }}
+          variant="ghost"
+          size="icon"
+          className="absolute top-4 right-4 text-muted-foreground"
         >
           <X size={18} strokeWidth={2} />
-        </button>
+        </Button>
 
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
           <div style={{
@@ -100,7 +91,7 @@ export default function InsightPopup({ weekStartStr, hasEnoughData }: InsightPop
             className="w-full"
           >
             {isGenerating
-              ? <><Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> 生成しています…</>
+              ? <><Loader2 size={16} className="animate-spin" /> 生成しています…</>
               : <><Sparkles size={16} strokeWidth={2} /> 振り返りを見る</>
             }
           </Button>
@@ -113,8 +104,7 @@ export default function InsightPopup({ weekStartStr, hasEnoughData }: InsightPop
             後で
           </Button>
         </div>
-      </div>
-      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      </Card>
     </div>
   );
 }

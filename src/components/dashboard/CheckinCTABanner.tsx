@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Sun, Moon, PenLine } from 'lucide-react';
+import { Button } from '@takaki/go-design-system';
 
 interface CheckinCTABannerProps {
   greeting: string;
@@ -15,12 +16,9 @@ export default function CheckinCTABanner({ greeting, ctaLabel, timing }: Checkin
 
   return (
     <div style={{
-      background: isMorning
-        ? 'var(--color-primary)'
-        : 'var(--foreground)',
+      background: isMorning ? 'var(--color-primary)' : 'var(--foreground)',
       borderRadius: 'var(--radius-lg)',
       padding: '20px 24px',
-      marginBottom: '20px',
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       position: 'relative', overflow: 'hidden',
     }}>
@@ -49,21 +47,12 @@ export default function CheckinCTABanner({ greeting, ctaLabel, timing }: Checkin
         </div>
       </div>
 
-      <Link href="/checkin" style={{
-        background: 'rgba(255,255,255,0.15)',
-        backdropFilter: 'blur(8px)',
-        color: 'white',
-        borderRadius: 'var(--radius-md)',
-        padding: '9px 18px',
-        fontSize: '14px', fontWeight: 600,
-        textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all 0.18s ease',
-        display: 'inline-flex', alignItems: 'center', gap: '6px',
-        border: '1px solid rgba(255,255,255,0.25)',
-        position: 'relative', letterSpacing: '-0.01em',
-      }}>
-        <PenLine size={14} strokeWidth={2.2} />
-        記録する
-      </Link>
+      <Button asChild className="text-white shrink-0" style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)' } as React.CSSProperties}>
+        <Link href="/checkin">
+          <PenLine size={14} strokeWidth={2.2} />
+          記録する
+        </Link>
+      </Button>
     </div>
   );
 }
