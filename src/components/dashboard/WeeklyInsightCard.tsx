@@ -14,7 +14,6 @@ interface InsightSections {
 }
 
 function parseInsightSections(text: string): InsightSections | null {
-  // new format
   const summaryMatch = text.match(/【今週のサマリー】\s*([\s\S]*?)(?=【パターン分析】|【来週への一言】|$)/)
     ?? text.match(/【今週のまとめ】\s*([\s\S]*?)(?=【気づき】|【来週への提案】|$)/);
   const insightMatch = text.match(/【パターン分析】\s*([\s\S]*?)(?=【来週への一言】|$)/)
@@ -36,25 +35,25 @@ const SECTION_META = [
     key: 'summary' as const,
     label: '今週のサマリー',
     Icon: TrendingUp,
-    color: 'var(--text-green)',
-    bg: 'var(--bg-green)',
-    border: 'var(--border-green)',
+    color: 'var(--color-success)',
+    bg: 'var(--color-success-subtle)',
+    border: 'var(--color-success)',
   },
   {
     key: 'insight' as const,
     label: 'パターン分析',
     Icon: Lightbulb,
-    color: 'var(--text-amber)',
-    bg: 'var(--bg-amber)',
-    border: 'var(--border-amber)',
+    color: 'var(--color-warning)',
+    bg: 'var(--color-warning-subtle)',
+    border: 'var(--color-warning)',
   },
   {
     key: 'suggestion' as const,
     label: '来週への一言',
     Icon: ArrowRight,
-    color: 'var(--text-green)',
-    bg: 'var(--bg-green)',
-    border: 'var(--border-green)',
+    color: 'var(--color-success)',
+    bg: 'var(--color-success-subtle)',
+    border: 'var(--color-success)',
   },
 ];
 
@@ -65,11 +64,11 @@ export default function WeeklyInsightCard({ insight, thisWeekAvg, lastWeekAvg }:
 
   return (
     <div style={{
-      background: 'var(--bg-card)',
-      border: '1px solid var(--border-color)',
-      borderRadius: 'var(--radius-xl)',
+      background: 'var(--card)',
+      border: '1px solid var(--border)',
+      borderRadius: 'var(--radius-lg)',
       padding: '24px',
-      boxShadow: 'var(--shadow-card)',
+      boxShadow: 'var(--shadow-md)',
     }}>
       {/* ヘッダー */}
       <div style={{
@@ -79,18 +78,18 @@ export default function WeeklyInsightCard({ insight, thisWeekAvg, lastWeekAvg }:
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{
             width: '32px', height: '32px', borderRadius: 'var(--radius-md)',
-            background: 'var(--bg-purple)',
+            background: 'var(--color-surface-subtle)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             flexShrink: 0,
           }}>
-            <BrainCircuit size={16} strokeWidth={1.8} color="var(--accent-green)" />
+            <BrainCircuit size={16} strokeWidth={1.8} color="var(--color-primary)" />
           </div>
           <div>
-            <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: '-0.01em', margin: 0 }}>
+            <p style={{ fontSize: '14px', fontWeight: 600, color: 'var(--foreground)', letterSpacing: '-0.01em', margin: 0 }}>
               週次レポート
             </p>
             {weekDiff !== null && (
-              <p style={{ fontSize: '12px', color: weekDiff > 0 ? 'var(--text-green)' : weekDiff < 0 ? 'var(--text-amber)' : 'var(--text-placeholder)', margin: 0 }}>
+              <p style={{ fontSize: '12px', color: weekDiff > 0 ? 'var(--color-success)' : weekDiff < 0 ? 'var(--color-warning)' : 'var(--color-text-subtle)', margin: 0 }}>
                 {weekDiff > 0
                   ? `先週より+${weekDiff}pt 上向き`
                   : weekDiff < 0
@@ -107,17 +106,17 @@ export default function WeeklyInsightCard({ insight, thisWeekAvg, lastWeekAvg }:
             <div style={{
               textAlign: 'right',
               padding: '6px 14px', borderRadius: 'var(--radius-md)',
-              background: 'var(--bg-green)', border: '1px solid var(--border-green)',
+              background: 'var(--color-success-subtle)', border: '1px solid var(--color-success)',
             }}>
-              <div style={{ fontSize: '10px', color: 'var(--text-green)', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>今週平均</div>
-              <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-green)', letterSpacing: '-0.04em', lineHeight: 1.1 }}>
+              <div style={{ fontSize: '10px', color: 'var(--color-success)', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>今週平均</div>
+              <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--color-success)', letterSpacing: '-0.04em', lineHeight: 1.1 }}>
                 {Math.round(thisWeekAvg)}
               </div>
             </div>
             {lastWeekAvg !== null && (
-              <div style={{ textAlign: 'right', padding: '6px 14px', borderRadius: 'var(--radius-md)', background: 'var(--bg-subtle)', border: '1px solid var(--border-color)' }}>
-                <div style={{ fontSize: '10px', color: 'var(--text-placeholder)', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>先週</div>
-                <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--text-muted)', letterSpacing: '-0.04em', lineHeight: 1.1 }}>
+              <div style={{ textAlign: 'right', padding: '6px 14px', borderRadius: 'var(--radius-md)', background: 'var(--color-surface-subtle)', border: '1px solid var(--border)' }}>
+                <div style={{ fontSize: '10px', color: 'var(--color-text-subtle)', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>先週</div>
+                <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--color-text-secondary)', letterSpacing: '-0.04em', lineHeight: 1.1 }}>
                   {Math.round(lastWeekAvg)}
                 </div>
               </div>
@@ -141,10 +140,10 @@ export default function WeeklyInsightCard({ insight, thisWeekAvg, lastWeekAvg }:
                   background: bg, border: `1px solid ${border}`,
                 }}>
                   <div style={{
-                    width: '28px', height: '28px', borderRadius: 'var(--radius-sm)',
-                    background: 'var(--bg-card)', flexShrink: 0,
+                    width: '28px', height: '28px', borderRadius: 'var(--radius-md)',
+                    background: 'var(--card)', flexShrink: 0,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: 'var(--shadow-xs)',
+                    boxShadow: 'var(--shadow-sm)',
                     marginTop: '1px',
                   }}>
                     <Icon size={14} strokeWidth={2} color={color} />
@@ -157,7 +156,7 @@ export default function WeeklyInsightCard({ insight, thisWeekAvg, lastWeekAvg }:
                       {label}
                     </p>
                     <p style={{
-                      fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.75, margin: 0,
+                      fontSize: '14px', color: 'var(--foreground)', lineHeight: 1.75, margin: 0,
                     }}>
                       {text}
                     </p>
@@ -167,7 +166,7 @@ export default function WeeklyInsightCard({ insight, thisWeekAvg, lastWeekAvg }:
             })}
           </div>
         ) : (
-          <p style={{ fontSize: '15px', color: 'var(--text-secondary)', lineHeight: 1.8, margin: 0 }}>
+          <p style={{ fontSize: '15px', color: 'var(--foreground)', lineHeight: 1.8, margin: 0 }}>
             {insight.insight_text}
           </p>
         );
@@ -175,10 +174,10 @@ export default function WeeklyInsightCard({ insight, thisWeekAvg, lastWeekAvg }:
         <div style={{
           display: 'flex', alignItems: 'center', gap: '12px',
           padding: '16px', borderRadius: 'var(--radius-lg)',
-          background: 'var(--bg-subtle)', border: '1px solid var(--border-color)',
+          background: 'var(--color-surface-subtle)', border: '1px solid var(--border)',
         }}>
-          <BrainCircuit size={18} strokeWidth={1.8} color="var(--text-placeholder)" />
-          <p style={{ fontSize: '14px', color: 'var(--text-placeholder)', margin: 0, lineHeight: 1.6 }}>
+          <BrainCircuit size={18} strokeWidth={1.8} color="var(--color-text-subtle)" />
+          <p style={{ fontSize: '14px', color: 'var(--color-text-subtle)', margin: 0, lineHeight: 1.6 }}>
             日曜日にログインすると、今週の振り返りが生成されます。
           </p>
         </div>

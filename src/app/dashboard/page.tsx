@@ -2,7 +2,6 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { TrendingUp, Brain, Activity } from 'lucide-react';
 import CareComment from '@/components/ui/CareComment';
-import TopNav from '@/components/ui/TopNav';
 import ScoreLineChart from '@/components/dashboard/ScoreLineChart';
 import MeditationDots from '@/components/dashboard/MeditationDots';
 import WeeklyInsightCard from '@/components/dashboard/WeeklyInsightCard';
@@ -28,12 +27,10 @@ export default async function DashboardPage() {
     { data: checkins },
     { data: prevWeekCheckins },
     { data: meditationLogs },
-    { data: profile },
   ] = await Promise.all([
     supabase.from('checkins').select('*').gte('checked_at', sevenDaysAgo + 'T00:00:00Z').order('checked_at', { ascending: false }),
     supabase.from('checkins').select('condition_score').gte('checked_at', fourteenDaysAgo + 'T00:00:00Z').lt('checked_at', sevenDaysAgo + 'T00:00:00Z'),
     supabase.from('meditation_logs').select('*').gte('logged_at', sevenDaysAgo + 'T00:00:00Z'),
-    supabase.from('profiles').select('display_name, avatar_url').eq('id', user.id).single(),
   ]);
 
   const now = new Date();
@@ -107,19 +104,19 @@ export default async function DashboardPage() {
   const uniqueDays = new Set((checkins || []).map(c => c.checked_at.split('T')[0])).size;
   const hasEnoughData = uniqueDays >= 5;
 
-  const diffColor = scoreDiff === null ? 'var(--text-placeholder)'
-    : scoreDiff > 0 ? 'var(--accent-green)'
-    : scoreDiff < 0 ? 'var(--accent-amber)'
-    : 'var(--text-placeholder)';
+  const diffColor = scoreDiff === null ? 'var(--color-text-subtle)'
+    : scoreDiff > 0 ? 'var(--color-success)'
+    : scoreDiff < 0 ? 'var(--color-warning)'
+    : 'var(--color-text-subtle)';
 
   const weekDiff = thisWeekAvg !== null && lastWeekAvg !== null ? thisWeekAvg - lastWeekAvg : null;
 
   const card: React.CSSProperties = {
-    background: 'var(--bg-card)',
-    border: '1px solid var(--border-color)',
-    borderRadius: 'var(--radius-xl)',
+    background: 'var(--card)',
+    border: '1px solid var(--border)',
+    borderRadius: 'var(--radius-lg)',
     padding: '24px',
-    boxShadow: 'var(--shadow-card)',
+    boxShadow: 'var(--shadow-md)',
     display: 'flex',
     flexDirection: 'column',
   };
@@ -127,16 +124,14 @@ export default async function DashboardPage() {
   const sectionLabel: React.CSSProperties = {
     fontSize: '12px',
     fontWeight: 600,
-    color: 'var(--text-placeholder)',
+    color: 'var(--color-text-subtle)',
     letterSpacing: '0.06em',
     textTransform: 'uppercase',
     marginBottom: '12px',
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
-      <TopNav morningDone={!!morningCheckin} eveningDone={!!checkoutCheckin} profile={profile} userId={user.id} />
-
+    <div style={{ minHeight: '100vh', background: 'var(--background)' }}>
       <main className="page-main">
 
         {showCTA && (
@@ -160,7 +155,7 @@ export default async function DashboardPage() {
                 <div style={{ display: 'flex', alignItems: 'flex-end', gap: '12px', marginBottom: '16px' }}>
                   <div style={{
                     fontSize: '72px', fontWeight: 800, lineHeight: 1,
-                    color: 'var(--text-primary)', letterSpacing: '-4px',
+                    color: 'var(--foreground)', letterSpacing: '-4px',
                     fontVariantNumeric: 'tabular-nums',
                   }}>
                     {todayScore ?? '–'}
@@ -170,36 +165,36 @@ export default async function DashboardPage() {
                       <span style={{
                         fontSize: '14px', fontWeight: 700, lineHeight: 1.2,
                         color: diffColor,
-                        background: scoreDiff > 0 ? 'var(--bg-green)' : scoreDiff < 0 ? 'var(--bg-amber)' : 'var(--bg-subtle)',
+                        background: scoreDiff > 0 ? 'var(--color-success-subtle)' : scoreDiff < 0 ? 'var(--color-warning-subtle)' : 'var(--color-surface-subtle)',
                         padding: '2px 8px', borderRadius: 'var(--radius-full)',
-                        border: `1px solid ${scoreDiff > 0 ? 'var(--border-green)' : scoreDiff < 0 ? 'var(--border-amber)' : 'var(--border-muted)'}`,
+                        border: `1px solid ${scoreDiff > 0 ? 'var(--color-success)' : scoreDiff < 0 ? 'var(--color-warning)' : 'var(--color-border-default)'}`,
                       }}>
                         {scoreDiff > 0 ? `+${scoreDiff}` : scoreDiff === 0 ? '±0' : scoreDiff}
                       </span>
                     )}
-                    <span style={{ fontSize: '12px', color: 'var(--text-placeholder)', letterSpacing: '-0.01em' }}>前日比</span>
+                    <span style={{ fontSize: '12px', color: 'var(--color-text-subtle)', letterSpacing: '-0.01em' }}>前日比</span>
                   </div>
                 </div>
 
                 {/* 心スコア・体スコアバッジ */}
                 <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
                   {([
-                    { Icon: Brain, label: '心', score: todayMindScore, color: 'var(--text-amber)', bg: 'var(--bg-amber)', border: 'var(--border-amber)' },
-                    { Icon: Activity, label: '体', score: todayBodyScore, color: 'var(--text-green)', bg: 'var(--bg-green)', border: 'var(--border-green)' },
+                    { Icon: Brain, label: '心', score: todayMindScore, color: 'var(--color-warning)', bg: 'var(--color-warning-subtle)', border: 'var(--color-warning)' },
+                    { Icon: Activity, label: '体', score: todayBodyScore, color: 'var(--color-success)', bg: 'var(--color-success-subtle)', border: 'var(--color-success)' },
                   ] as const).map(({ Icon, label, score, color, bg, border }) => (
                     <div key={label} style={{
                       flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                      padding: '10px 14px', borderRadius: 'var(--radius-md)',
-                      background: score !== null ? bg : 'var(--bg-subtle)',
-                      border: `1px solid ${score !== null ? border : 'var(--border-color)'}`,
+                      padding: '10px 14px', borderRadius: 'var(--radius-lg)',
+                      background: score !== null ? bg : 'var(--color-surface-subtle)',
+                      border: `1px solid ${score !== null ? border : 'var(--color-border-default)'}`,
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                        <Icon size={13} strokeWidth={2} color={score !== null ? color : 'var(--text-placeholder)'} />
-                        <span style={{ fontSize: '13px', color: score !== null ? color : 'var(--text-muted)', fontWeight: 500 }}>{label}</span>
+                        <Icon size={13} strokeWidth={2} color={score !== null ? color : 'var(--color-text-subtle)'} />
+                        <span style={{ fontSize: '13px', color: score !== null ? color : 'var(--color-text-secondary)', fontWeight: 500 }}>{label}</span>
                       </div>
                       <span style={{
                         fontSize: '17px', fontWeight: 700, letterSpacing: '-0.03em',
-                        color: score !== null ? color : 'var(--text-placeholder)',
+                        color: score !== null ? color : 'var(--color-text-subtle)',
                       }}>
                         {score ?? '–'}
                       </span>
@@ -210,7 +205,7 @@ export default async function DashboardPage() {
                 {/* Careのひとこと */}
                 {latestCheckin.ai_comment && (
                   <div style={{
-                    borderTop: '1px solid var(--border-color)', paddingTop: '16px', flex: 1,
+                    borderTop: '1px solid var(--border)', paddingTop: '16px', flex: 1,
                   }}>
                     <CareComment comment={latestCheckin.ai_comment} compact />
                   </div>
@@ -224,11 +219,11 @@ export default async function DashboardPage() {
               }}>
                 <div style={{
                   width: '52px', height: '52px', borderRadius: 'var(--radius-full)',
-                  background: 'var(--bg-green)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: 'var(--color-success-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <TrendingUp size={22} strokeWidth={1.8} color="var(--accent-green)" />
+                  <TrendingUp size={22} strokeWidth={1.8} color="var(--color-success)" />
                 </div>
-                <p style={{ fontSize: '14px', color: 'var(--text-placeholder)', textAlign: 'center', lineHeight: 1.6 }}>
+                <p style={{ fontSize: '14px', color: 'var(--color-text-subtle)', textAlign: 'center', lineHeight: 1.6 }}>
                   今日のチェックインが<br />まだありません
                 </p>
               </div>
@@ -244,17 +239,17 @@ export default async function DashboardPage() {
               <p style={{ ...sectionLabel, marginBottom: 0 }}>スコア推移（7日間）</p>
               {thisWeekAvg !== null && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '13px', color: 'var(--text-placeholder)' }}>
+                  <span style={{ fontSize: '13px', color: 'var(--color-text-subtle)' }}>
                     今週平均{' '}
-                    <span style={{ color: 'var(--text-green)', fontWeight: 700, fontSize: '15px' }}>{thisWeekAvg}</span>
+                    <span style={{ color: 'var(--color-success)', fontWeight: 700, fontSize: '15px' }}>{thisWeekAvg}</span>
                   </span>
                   {weekDiff !== null && weekDiff !== 0 && (
                     <span style={{
                       fontSize: '12px', fontWeight: 700,
-                      color: weekDiff > 0 ? 'var(--text-green)' : 'var(--text-amber)',
-                      background: weekDiff > 0 ? 'var(--bg-green)' : 'var(--bg-amber)',
+                      color: weekDiff > 0 ? 'var(--color-success)' : 'var(--color-warning)',
+                      background: weekDiff > 0 ? 'var(--color-success-subtle)' : 'var(--color-warning-subtle)',
                       padding: '2px 8px', borderRadius: 'var(--radius-full)',
-                      border: `1px solid ${weekDiff > 0 ? 'var(--border-green)' : 'var(--border-amber)'}`,
+                      border: `1px solid ${weekDiff > 0 ? 'var(--color-success)' : 'var(--color-warning)'}`,
                     }}>
                       {weekDiff > 0 ? `+${Math.round(weekDiff)}` : Math.round(weekDiff)}
                     </span>
@@ -275,9 +270,9 @@ export default async function DashboardPage() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
               <p style={{ ...sectionLabel, marginBottom: 0 }}>瞑想（7日間）</p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ fontSize: '13px', color: 'var(--text-placeholder)' }}>今週</span>
+                <span style={{ fontSize: '13px', color: 'var(--color-text-subtle)' }}>今週</span>
                 <span style={{
-                  fontSize: '15px', fontWeight: 700, color: totalMeditations > 0 ? 'var(--accent-amber)' : 'var(--text-placeholder)',
+                  fontSize: '15px', fontWeight: 700, color: totalMeditations > 0 ? 'var(--color-warning)' : 'var(--color-text-subtle)',
                   letterSpacing: '-0.02em',
                 }}>
                   {totalMeditations}回

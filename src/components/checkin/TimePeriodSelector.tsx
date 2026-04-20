@@ -37,9 +37,9 @@ const RATING_META: Array<{
   selectedBg: string;
   selectedBorder: string;
 }> = [
-  { value: 'A', Icon: TrendingUp,   selectedColor: 'var(--text-green)',  selectedBg: 'var(--bg-green)',  selectedBorder: 'var(--border-green)' },
-  { value: 'B', Icon: Minus,        selectedColor: 'var(--text-muted)',  selectedBg: 'var(--bg-subtle)', selectedBorder: 'var(--border-muted)' },
-  { value: 'C', Icon: TrendingDown, selectedColor: 'var(--text-amber)',  selectedBg: 'var(--bg-amber)',  selectedBorder: 'var(--border-amber)' },
+  { value: 'A', Icon: TrendingUp,   selectedColor: 'var(--color-success)', selectedBg: 'var(--color-success-subtle)', selectedBorder: 'var(--color-success)' },
+  { value: 'B', Icon: Minus,        selectedColor: 'var(--color-text-secondary)', selectedBg: 'var(--color-surface-subtle)', selectedBorder: 'var(--color-border-default)' },
+  { value: 'C', Icon: TrendingDown, selectedColor: 'var(--color-warning)', selectedBg: 'var(--color-warning-subtle)', selectedBorder: 'var(--color-warning)' },
 ];
 
 interface TimePeriodSelectorProps {
@@ -50,7 +50,6 @@ interface TimePeriodSelectorProps {
 
 export default function TimePeriodSelector({ timing, ratings, onChange }: TimePeriodSelectorProps) {
   const periods = timing === 'morning' ? MORNING_PERIODS : EVENING_PERIODS;
-
 
   const handleSelect = (periodKey: string, rating: Rating) => {
     onChange({ ...ratings, [periodKey]: rating });
@@ -65,8 +64,8 @@ export default function TimePeriodSelector({ timing, ratings, onChange }: TimePe
           <div key={key} style={{
             display: 'flex', alignItems: 'center', gap: '12px',
             padding: '12px 14px', borderRadius: 'var(--radius-lg)',
-            background: selected ? 'var(--bg-subtle)' : 'transparent',
-            border: `1px solid ${selected ? 'var(--border-color-hover)' : 'var(--border-color)'}`,
+            background: selected ? 'var(--color-surface-subtle)' : 'transparent',
+            border: `1px solid ${selected ? 'var(--color-border-strong)' : 'var(--color-border-default)'}`,
             transition: 'all 0.15s ease',
           }}>
             {/* 時間帯ラベル */}
@@ -74,10 +73,10 @@ export default function TimePeriodSelector({ timing, ratings, onChange }: TimePe
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
               minWidth: '44px', flexShrink: 0,
             }}>
-              <Icon size={16} strokeWidth={1.8} color={selected ? 'var(--accent-green)' : 'var(--text-placeholder)'} />
+              <Icon size={16} strokeWidth={1.8} color={selected ? 'var(--color-primary)' : 'var(--color-text-subtle)'} />
               <span style={{
                 fontSize: '12px', fontWeight: 600,
-                color: selected ? 'var(--text-green)' : 'var(--text-placeholder)',
+                color: selected ? 'var(--color-primary)' : 'var(--color-text-subtle)',
                 letterSpacing: '-0.01em',
               }}>
                 {label}
@@ -98,10 +97,10 @@ export default function TimePeriodSelector({ timing, ratings, onChange }: TimePe
                       flex: 1,
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px',
                       padding: '8px 4px',
-                      border: `1px solid ${isSelected ? selectedBorder : 'var(--border-color)'}`,
+                      border: `1px solid ${isSelected ? selectedBorder : 'var(--color-border-default)'}`,
                       borderRadius: 'var(--radius-md)',
-                      background: isSelected ? selectedBg : 'var(--bg-card)',
-                      color: isSelected ? selectedColor : 'var(--text-placeholder)',
+                      background: isSelected ? selectedBg : 'var(--card)',
+                      color: isSelected ? selectedColor : 'var(--color-text-subtle)',
                       fontSize: '12px', fontWeight: isSelected ? 700 : 400,
                       cursor: 'pointer',
                       transition: 'all 0.12s ease',
@@ -113,7 +112,7 @@ export default function TimePeriodSelector({ timing, ratings, onChange }: TimePe
                       letterSpacing: '-0.01em',
                     }}
                   >
-                    <RIcon size={11} strokeWidth={2.2} color={isSelected ? selectedColor : 'var(--text-placeholder)'} />
+                    <RIcon size={11} strokeWidth={2.2} color={isSelected ? selectedColor : 'var(--color-text-subtle)'} />
                     <span style={{ minWidth: 0 }}>{btnLabel}</span>
                   </button>
                 );

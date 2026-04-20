@@ -32,17 +32,17 @@ function TagButton({ label, selected, onClick }: { label: string; selected: bool
       style={{
         padding: '6px 14px', borderRadius: 'var(--radius-full)',
         border: selected
-          ? '1.5px solid var(--border-amber)'
-          : `1px solid ${hovered ? 'var(--border-color-hover)' : 'var(--border-color)'}`,
-        background: selected ? 'var(--bg-amber)' : hovered ? 'var(--bg-subtle)' : 'transparent',
-        color: selected ? 'var(--text-amber-dark)' : hovered ? 'var(--text-secondary)' : 'var(--text-muted)',
+          ? '1.5px solid var(--color-warning)'
+          : `1px solid ${hovered ? 'var(--color-border-strong)' : 'var(--color-border-default)'}`,
+        background: selected ? 'var(--color-warning-subtle)' : hovered ? 'var(--color-surface-subtle)' : 'transparent',
+        color: selected ? 'var(--color-warning)' : hovered ? 'var(--foreground)' : 'var(--color-text-secondary)',
         fontSize: '13px', fontWeight: selected ? 600 : 400,
         cursor: 'pointer',
         transform: selected ? 'scale(1.02)' : 'scale(1)',
         transition: 'all 0.15s ease',
         whiteSpace: 'nowrap',
         letterSpacing: '-0.01em',
-        boxShadow: selected ? 'var(--shadow-xs)' : 'none',
+        boxShadow: selected ? 'var(--shadow-sm)' : 'none',
       }}
     >
       {label}
@@ -87,21 +87,19 @@ export default function ActivityTags({ timing, selected, onChange, userTags, onA
           onKeyDown={handleKeyDown}
           placeholder="独自タグを追加..."
           style={{
-            flex: 1, border: '1px solid var(--border-color)',
+            flex: 1, border: '1px solid var(--color-border-default)',
             borderRadius: 'var(--radius-full)', padding: '7px 14px',
-            fontSize: '13px', color: 'var(--text-secondary)', background: 'var(--bg-subtle)',
+            fontSize: '13px', color: 'var(--foreground)', background: 'var(--color-surface-subtle)',
             outline: 'none', transition: 'all 0.15s ease', minWidth: 0,
             letterSpacing: '-0.01em',
           }}
           onFocus={e => {
-            e.target.style.borderColor = 'var(--accent-green)';
-            e.target.style.boxShadow = '0 0 0 3px rgba(16,185,129,0.12)';
-            e.target.style.background = 'var(--bg-card)';
+            e.target.style.borderColor = 'var(--color-primary)';
+            e.target.style.background = 'var(--card)';
           }}
           onBlur={e => {
-            e.target.style.borderColor = 'var(--border-color)';
-            e.target.style.boxShadow = 'none';
-            e.target.style.background = 'var(--bg-subtle)';
+            e.target.style.borderColor = 'var(--color-border-default)';
+            e.target.style.background = 'var(--color-surface-subtle)';
           }}
         />
         <button
@@ -111,9 +109,9 @@ export default function ActivityTags({ timing, selected, onChange, userTags, onA
           style={{
             display: 'flex', alignItems: 'center', gap: '4px',
             padding: '7px 14px', borderRadius: 'var(--radius-full)',
-            border: '1px solid var(--border-color)',
-            background: inputValue.trim() ? 'var(--bg-green)' : 'var(--bg-subtle)',
-            color: inputValue.trim() ? 'var(--text-green)' : 'var(--text-placeholder)',
+            border: '1px solid var(--color-border-default)',
+            background: inputValue.trim() ? 'var(--color-success-subtle)' : 'var(--color-surface-subtle)',
+            color: inputValue.trim() ? 'var(--color-success)' : 'var(--color-text-subtle)',
             fontSize: '13px', fontWeight: 600, cursor: inputValue.trim() ? 'pointer' : 'not-allowed',
             transition: 'all 0.15s ease', whiteSpace: 'nowrap', flexShrink: 0,
             letterSpacing: '-0.01em',

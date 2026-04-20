@@ -21,17 +21,17 @@ function CustomTooltip({ active, payload, label }: TooltipProps) {
   if (!active || !payload?.length || payload[0].value == null) return null;
   return (
     <div style={{
-      background: 'var(--bg-card)',
-      border: '1px solid var(--border-color)',
+      background: 'var(--card)',
+      border: '1px solid var(--border)',
       borderRadius: 'var(--radius-md)',
       padding: '8px 14px',
-      boxShadow: 'var(--shadow-dropdown)',
+      boxShadow: 'var(--shadow-lg)',
       textAlign: 'center',
     }}>
-      <div style={{ fontSize: '11px', color: 'var(--text-placeholder)', marginBottom: '2px', letterSpacing: '0.02em' }}>
+      <div style={{ fontSize: '11px', color: 'var(--color-text-subtle)', marginBottom: '2px', letterSpacing: '0.02em' }}>
         {label}
       </div>
-      <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em', lineHeight: 1.2 }}>
+      <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.03em', lineHeight: 1.2 }}>
         {payload[0].value}
       </div>
     </div>
@@ -53,7 +53,6 @@ export default function ScoreLineChart({ data, fillHeight = false }: ScoreLineCh
   const maxScore = scores.length > 0 ? Math.min(100, Math.max(...scores) + 8) : 100;
 
   const todayDot = chartData.find(d => d.isToday && d.score != null);
-  const todayIndex = todayDot ? chartData.indexOf(todayDot) : -1;
 
   return (
     <div style={{ width: '100%', height: fillHeight ? '100%' : 240, minHeight: 180 }}>
@@ -61,22 +60,22 @@ export default function ScoreLineChart({ data, fillHeight = false }: ScoreLineCh
         <AreaChart data={chartData} margin={{ top: 12, right: 8, bottom: 4, left: 0 }}>
           <defs>
             <linearGradient id="scoreGradFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stopColor="var(--accent-green)" stopOpacity={0.18} />
-              <stop offset="80%"  stopColor="var(--accent-green)" stopOpacity={0.02} />
-              <stop offset="100%" stopColor="var(--accent-green)" stopOpacity={0} />
+              <stop offset="0%"   stopColor="#2D8A5F" stopOpacity={0.18} />
+              <stop offset="80%"  stopColor="#2D8A5F" stopOpacity={0.02} />
+              <stop offset="100%" stopColor="#2D8A5F" stopOpacity={0} />
             </linearGradient>
           </defs>
 
           <CartesianGrid
             strokeDasharray="4 4"
-            stroke="var(--chart-grid)"
+            stroke="var(--color-border-subtle)"
             vertical={false}
             strokeWidth={1}
           />
 
           <XAxis
             dataKey="label"
-            tick={{ fontSize: 12, fill: 'var(--text-placeholder)', fontFamily: 'DM Sans, system-ui, sans-serif' }}
+            tick={{ fontSize: 12, fill: 'var(--color-text-subtle)', fontFamily: 'DM Sans, system-ui, sans-serif' }}
             tickLine={false}
             axisLine={false}
             dy={6}
@@ -84,7 +83,7 @@ export default function ScoreLineChart({ data, fillHeight = false }: ScoreLineCh
 
           <YAxis
             domain={[minScore, maxScore]}
-            tick={{ fontSize: 12, fill: 'var(--text-placeholder)', fontFamily: 'DM Sans, system-ui, sans-serif' }}
+            tick={{ fontSize: 12, fill: 'var(--color-text-subtle)', fontFamily: 'DM Sans, system-ui, sans-serif' }}
             tickLine={false}
             axisLine={false}
             width={28}
@@ -93,18 +92,18 @@ export default function ScoreLineChart({ data, fillHeight = false }: ScoreLineCh
 
           <Tooltip
             content={<CustomTooltip />}
-            cursor={{ stroke: 'var(--border-color)', strokeWidth: 1, strokeDasharray: '4 4' }}
+            cursor={{ stroke: 'var(--border)', strokeWidth: 1, strokeDasharray: '4 4' }}
           />
 
           <Area
             type="monotone"
             dataKey="score"
-            stroke="var(--accent-green)"
+            stroke="#2D8A5F"
             strokeWidth={2.5}
             fill="url(#scoreGradFill)"
             dot={false}
             activeDot={{
-              r: 5, fill: 'var(--accent-green)', stroke: 'var(--bg-card)', strokeWidth: 2,
+              r: 5, fill: '#2D8A5F', stroke: 'var(--card)', strokeWidth: 2,
             }}
             connectNulls={false}
           />
@@ -115,8 +114,8 @@ export default function ScoreLineChart({ data, fillHeight = false }: ScoreLineCh
               x={todayDot.label}
               y={todayDot.score}
               r={6}
-              fill="var(--accent-green)"
-              stroke="var(--bg-card)"
+              fill="#2D8A5F"
+              stroke="var(--card)"
               strokeWidth={2.5}
             />
           )}

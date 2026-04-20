@@ -8,7 +8,6 @@ interface Section {
 }
 
 function parseComment(comment: string): { main: string; sections: Section[] } | null {
-  // 新形式: 【ひとこと】【気づき】【提案】
   const mainMatch = comment.match(/【ひとこと】\s*([\s\S]*?)(?=【気づき】|【提案】|$)/);
   const insightMatch = comment.match(/【気づき】\s*([\s\S]*?)(?=【提案】|$)/);
   const suggestionMatch = comment.match(/【提案】\s*([\s\S]*?)$/);
@@ -23,7 +22,7 @@ function parseComment(comment: string): { main: string; sections: Section[] } | 
     };
   }
 
-  // 旧形式フォールバック: 【今の状態】【今日の状態】【気づき】【提案】
+  // 旧形式フォールバック
   const legacyLabels = ['今の状態', '今日の状態', '気づき', '提案'];
   const legacySections: Section[] = [];
   for (let i = 0; i < legacyLabels.length; i++) {
@@ -43,20 +42,16 @@ function parseComment(comment: string): { main: string; sections: Section[] } | 
   return null;
 }
 
-/** Care キャラクターアイコン（リーフ + 顔） */
 function CareIcon({ size = 32 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* 葉っぱ背景 */}
-      <circle cx="20" cy="20" r="20" fill="var(--accent-green)" opacity="0.12" />
-      <circle cx="20" cy="20" r="16" fill="var(--accent-green)" opacity="0.18" />
-      {/* リーフ */}
+      <circle cx="20" cy="20" r="20" fill="var(--color-primary)" opacity="0.12" />
+      <circle cx="20" cy="20" r="16" fill="var(--color-primary)" opacity="0.18" />
       <path
         d="M20 8 C14 8 10 13 10 18 C10 24 15 29 20 32 C25 29 30 24 30 18 C30 13 26 8 20 8Z"
-        fill="var(--accent-green)"
+        fill="var(--color-primary)"
         opacity="0.9"
       />
-      {/* 顔 */}
       <circle cx="17" cy="18" r="1.5" fill="white" />
       <circle cx="23" cy="18" r="1.5" fill="white" />
       <path d="M17 22 Q20 24.5 23 22" stroke="white" strokeWidth="1.5" strokeLinecap="round" fill="none" />
@@ -72,15 +67,15 @@ interface CareCommentProps {
 const SECTION_META: Record<string, { Icon: typeof Lightbulb; color: string; bg: string; border: string }> = {
   '気づき': {
     Icon: Lightbulb,
-    color: 'var(--text-amber)',
-    bg: 'var(--bg-amber)',
-    border: 'var(--border-amber)',
+    color: 'var(--color-warning)',
+    bg: 'var(--color-warning-subtle)',
+    border: 'var(--color-warning)',
   },
   '提案': {
     Icon: ArrowRight,
-    color: 'var(--text-green)',
-    bg: 'var(--bg-green)',
-    border: 'var(--border-green)',
+    color: 'var(--color-success)',
+    bg: 'var(--color-success-subtle)',
+    border: 'var(--color-success)',
   },
 };
 
@@ -92,12 +87,12 @@ export default function CareComment({ comment, compact = false }: CareCommentPro
       <div style={{
         display: 'flex', gap: '12px', alignItems: 'flex-start',
         padding: compact ? '12px 14px' : '16px',
-        background: 'var(--bg-green)',
-        border: '1px solid var(--border-green)',
+        background: 'var(--color-success-subtle)',
+        border: '1px solid var(--color-success)',
         borderRadius: 'var(--radius-lg)',
       }}>
         <CareIcon size={32} />
-        <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.75, margin: 0 }}>
+        <p style={{ fontSize: '14px', color: 'var(--foreground)', lineHeight: 1.75, margin: 0 }}>
           {comment}
         </p>
       </div>
@@ -106,7 +101,6 @@ export default function CareComment({ comment, compact = false }: CareCommentPro
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-      {/* メインメッセージ */}
       {parsed.main && (
         <div style={{
           display: 'flex', gap: '12px', alignItems: 'flex-start',
@@ -118,7 +112,7 @@ export default function CareComment({ comment, compact = false }: CareCommentPro
           <p style={{
             fontSize: compact ? '14px' : '15px',
             fontWeight: 600,
-            color: 'var(--text-primary)',
+            color: 'var(--foreground)',
             lineHeight: 1.7,
             margin: 0,
             letterSpacing: '-0.01em',
@@ -128,10 +122,9 @@ export default function CareComment({ comment, compact = false }: CareCommentPro
         </div>
       )}
 
-      {/* サブセクション */}
       {parsed.sections.length > 0 && (
         <div style={{
-          borderTop: compact ? '1px solid var(--border-color)' : 'none',
+          borderTop: compact ? '1px solid var(--border)' : 'none',
           paddingTop: compact ? '10px' : 0,
           display: 'flex', flexDirection: 'column', gap: '8px',
         }}>
@@ -142,22 +135,22 @@ export default function CareComment({ comment, compact = false }: CareCommentPro
               <div key={label} style={{
                 display: 'flex', gap: '10px', alignItems: 'flex-start',
                 padding: compact ? '10px 12px' : '12px 14px',
-                background: meta?.bg ?? 'var(--bg-subtle)',
-                border: `1px solid ${meta?.border ?? 'var(--border-color)'}`,
+                background: meta?.bg ?? 'var(--color-surface-subtle)',
+                border: `1px solid ${meta?.border ?? 'var(--border)'}`,
                 borderRadius: 'var(--radius-md)',
               }}>
                 <div style={{
                   width: '22px', height: '22px', borderRadius: 'var(--radius-sm)',
-                  background: 'var(--bg-card)', flexShrink: 0,
+                  background: 'var(--card)', flexShrink: 0,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: 'var(--shadow-xs)', marginTop: '1px',
+                  boxShadow: 'var(--shadow-sm)', marginTop: '1px',
                 }}>
-                  <Icon size={12} strokeWidth={2.2} color={meta?.color ?? 'var(--text-muted)'} />
+                  <Icon size={12} strokeWidth={2.2} color={meta?.color ?? 'var(--color-text-secondary)'} />
                 </div>
                 <div>
                   <p style={{
                     fontSize: '11px', fontWeight: 700,
-                    color: meta?.color ?? 'var(--text-muted)',
+                    color: meta?.color ?? 'var(--color-text-secondary)',
                     letterSpacing: '0.05em', textTransform: 'uppercase',
                     marginBottom: '3px',
                   }}>
@@ -165,7 +158,7 @@ export default function CareComment({ comment, compact = false }: CareCommentPro
                   </p>
                   <p style={{
                     fontSize: compact ? '13px' : '14px',
-                    color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0,
+                    color: 'var(--foreground)', lineHeight: 1.7, margin: 0,
                   }}>
                     {text}
                   </p>

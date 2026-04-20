@@ -16,13 +16,12 @@ export default function CheckinCTABanner({ greeting, ctaLabel, timing }: Checkin
   return (
     <div style={{
       background: isMorning
-        ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
-        : 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)',
-      borderRadius: 'var(--radius-xl)',
+        ? 'var(--color-primary)'
+        : 'var(--color-text-primary)',
+      borderRadius: 'var(--radius-lg)',
       padding: '20px 24px',
       marginBottom: '20px',
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      boxShadow: isMorning ? 'var(--shadow-green)' : '0 4px 20px rgba(0,0,0,0.25)',
       position: 'relative', overflow: 'hidden',
     }}>
       {/* 背景装飾 */}
@@ -61,10 +60,7 @@ export default function CheckinCTABanner({ greeting, ctaLabel, timing }: Checkin
         display: 'inline-flex', alignItems: 'center', gap: '6px',
         border: '1px solid rgba(255,255,255,0.25)',
         position: 'relative', letterSpacing: '-0.01em',
-      }}
-        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.25)'; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.15)'; }}
-      >
+      }}>
         <PenLine size={14} strokeWidth={2.2} />
         記録する
       </Link>

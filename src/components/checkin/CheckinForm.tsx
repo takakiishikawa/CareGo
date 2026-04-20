@@ -21,19 +21,19 @@ function SectionHeader({ icon, label, required = false, optional = false }: {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
       <div style={{
-        width: '26px', height: '26px', borderRadius: 'var(--radius-sm)',
-        background: 'var(--bg-subtle)',
-        border: '1px solid var(--border-color)',
+        width: '26px', height: '26px', borderRadius: 'var(--radius-md)',
+        background: 'var(--color-surface-subtle)',
+        border: '1px solid var(--border)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         flexShrink: 0,
       }}>
         {icon}
       </div>
-      <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)', letterSpacing: '-0.01em' }}>
+      <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--foreground)', letterSpacing: '-0.01em' }}>
         {label}
       </span>
-      {required && <span style={{ fontSize: '12px', color: 'var(--text-error)' }}>必須</span>}
-      {optional && <span style={{ fontSize: '12px', color: 'var(--text-placeholder)' }}>任意</span>}
+      {required && <span style={{ fontSize: '12px', color: 'var(--color-danger)' }}>必須</span>}
+      {optional && <span style={{ fontSize: '12px', color: 'var(--color-text-subtle)' }}>任意</span>}
     </div>
   );
 }
@@ -153,21 +153,20 @@ export default function CheckinForm({ timing }: CheckinFormProps) {
           <div style={{
             width: '40px', height: '40px', borderRadius: 'var(--radius-lg)',
             background: isMorning
-              ? 'linear-gradient(135deg, #10B981, #059669)'
-              : 'linear-gradient(135deg, #1E293B, #0F172A)',
+              ? 'var(--color-primary)'
+              : 'var(--color-text-primary)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: isMorning ? 'var(--shadow-green)' : '0 4px 12px rgba(0,0,0,0.3)',
           }}>
             <span style={{ fontSize: '20px' }}>{isMorning ? '☀' : '☾'}</span>
           </div>
           <div>
             <h1 style={{
-              fontSize: '20px', fontWeight: 700, color: 'var(--text-primary)',
+              fontSize: '20px', fontWeight: 700, color: 'var(--foreground)',
               margin: 0, letterSpacing: '-0.03em', lineHeight: 1.2,
             }}>
               {isMorning ? '朝チェックイン' : '夜チェックアウト'}
             </h1>
-            <p style={{ fontSize: '13px', color: 'var(--text-placeholder)', margin: 0 }}>
+            <p style={{ fontSize: '13px', color: 'var(--color-text-subtle)', margin: 0 }}>
               {isMorning ? '今朝の状態を記録しましょう' : '今日一日を締めくくりましょう'}
             </p>
           </div>
@@ -176,29 +175,29 @@ export default function CheckinForm({ timing }: CheckinFormProps) {
 
       {/* フォームカード */}
       <div className="checkin-card" style={{
-        background: 'var(--bg-card)',
-        border: '1px solid var(--border-color)',
-        borderRadius: 'var(--radius-xl)',
+        background: 'var(--card)',
+        border: '1px solid var(--border)',
+        borderRadius: 'var(--radius-lg)',
         padding: '28px 28px',
-        boxShadow: 'var(--shadow-card)',
+        boxShadow: 'var(--shadow-md)',
       }}>
 
         {/* 時間帯別コンディション */}
         <section style={{ marginBottom: '24px' }}>
           <SectionHeader
-            icon={<BarChart2 size={13} strokeWidth={2.2} color="var(--accent-green)" />}
+            icon={<BarChart2 size={13} strokeWidth={2.2} color="var(--color-primary)" />}
             label="時間帯別コンディション"
             required
           />
           <TimePeriodSelector timing={timing} ratings={ratings} onChange={setRatings} />
         </section>
 
-        <div style={{ borderTop: '1px solid var(--border-color)', margin: '0 -2px 24px' }} />
+        <div style={{ borderTop: '1px solid var(--border)', margin: '0 -2px 24px' }} />
 
         {/* 活動タグ */}
         <section style={{ marginBottom: '24px' }}>
           <SectionHeader
-            icon={<Activity size={13} strokeWidth={2.2} color="var(--accent-amber)" />}
+            icon={<Activity size={13} strokeWidth={2.2} color="var(--color-warning)" />}
             label={activityLabel}
             optional
           />
@@ -211,25 +210,25 @@ export default function CheckinForm({ timing }: CheckinFormProps) {
           />
         </section>
 
-        <div style={{ borderTop: '1px solid var(--border-color)', margin: '0 -2px 24px' }} />
+        <div style={{ borderTop: '1px solid var(--border)', margin: '0 -2px 24px' }} />
 
         {/* メモ（音声入力）*/}
         <section style={{ marginBottom: '28px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
             <SectionHeader
-              icon={<FileText size={13} strokeWidth={2.2} color="var(--text-muted)" />}
+              icon={<FileText size={13} strokeWidth={2.2} color="var(--color-text-secondary)" />}
               label="メモ"
               optional
             />
             {isRecording && (
               <span style={{
-                fontSize: '12px', color: '#EF4444', fontWeight: 600,
+                fontSize: '12px', color: 'var(--color-danger)', fontWeight: 600,
                 display: 'flex', alignItems: 'center', gap: '5px',
                 animation: 'pulse 1.5s ease-in-out infinite',
               }}>
                 <span style={{
                   width: '7px', height: '7px', borderRadius: '50%',
-                  background: '#EF4444', display: 'inline-block',
+                  background: 'var(--color-danger)', display: 'inline-block',
                   animation: 'pulse 1s ease-in-out infinite',
                 }} />
                 録音中
@@ -239,19 +238,18 @@ export default function CheckinForm({ timing }: CheckinFormProps) {
 
           {/* 音声入力エリア */}
           <div style={{
-            border: `1px solid ${isRecording ? '#EF4444' : 'var(--border-color)'}`,
+            border: `1px solid ${isRecording ? 'var(--color-danger)' : 'var(--border)'}`,
             borderRadius: 'var(--radius-lg)',
             padding: '16px',
-            background: isRecording ? 'rgba(239,68,68,0.04)' : 'var(--bg-subtle)',
+            background: isRecording ? 'var(--color-danger-subtle)' : 'var(--color-surface-subtle)',
             transition: 'all 0.15s ease',
-            boxShadow: isRecording ? '0 0 0 3px rgba(239,68,68,0.12)' : 'none',
             minHeight: '80px',
             display: 'flex', flexDirection: 'column', gap: '12px',
           }}>
             {/* テキスト表示 */}
             <p style={{
               fontSize: '14px',
-              color: freeText ? 'var(--text-secondary)' : 'var(--text-placeholder)',
+              color: freeText ? 'var(--foreground)' : 'var(--color-text-subtle)',
               lineHeight: 1.7, margin: 0, flex: 1,
               minHeight: '40px',
             }}>
@@ -269,14 +267,11 @@ export default function CheckinForm({ timing }: CheckinFormProps) {
                     padding: '8px 16px', borderRadius: 'var(--radius-full)',
                     border: 'none',
                     background: isRecording
-                      ? '#EF4444'
-                      : 'var(--accent-green)',
+                      ? 'var(--color-danger)'
+                      : 'var(--color-primary)',
                     color: 'white',
                     fontSize: '13px', fontWeight: 600,
                     cursor: 'pointer', transition: 'all 0.15s ease',
-                    boxShadow: isRecording
-                      ? '0 2px 8px rgba(239,68,68,0.40)'
-                      : 'var(--shadow-green)',
                     letterSpacing: '-0.01em',
                   }}
                 >
@@ -286,7 +281,7 @@ export default function CheckinForm({ timing }: CheckinFormProps) {
                   }
                 </button>
               ) : (
-                <span style={{ fontSize: '12px', color: 'var(--text-placeholder)' }}>
+                <span style={{ fontSize: '12px', color: 'var(--color-text-subtle)' }}>
                   このブラウザは音声入力非対応です
                 </span>
               )}
@@ -296,13 +291,11 @@ export default function CheckinForm({ timing }: CheckinFormProps) {
                   type="button"
                   onClick={() => setFreeText('')}
                   style={{
-                    fontSize: '12px', color: 'var(--text-placeholder)',
+                    fontSize: '12px', color: 'var(--color-text-subtle)',
                     background: 'none', border: 'none', cursor: 'pointer',
-                    padding: '4px 8px', borderRadius: 'var(--radius-sm)',
+                    padding: '4px 8px', borderRadius: 'var(--radius-md)',
                     transition: 'all 0.12s ease',
                   }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-error)'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-placeholder)'; }}
                 >
                   クリア
                 </button>
@@ -314,9 +307,9 @@ export default function CheckinForm({ timing }: CheckinFormProps) {
         {/* エラー */}
         {error && (
           <div style={{
-            fontSize: '14px', color: 'var(--text-error)',
-            background: '#FEF2F2', padding: '12px 16px',
-            borderRadius: 'var(--radius-md)', border: '1px solid #FECACA',
+            fontSize: '14px', color: 'var(--color-danger)',
+            background: 'var(--color-danger-subtle)', padding: '12px 16px',
+            borderRadius: 'var(--radius-md)', border: '1px solid var(--color-danger)',
             marginBottom: '16px',
           }}>
             {error}
@@ -329,27 +322,14 @@ export default function CheckinForm({ timing }: CheckinFormProps) {
           disabled={!isValid || isSubmitting}
           style={{
             width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-            background: isValid && !isSubmitting ? 'var(--gradient-green)' : 'var(--bg-muted)',
-            color: isValid ? 'white' : 'var(--text-placeholder)',
+            background: isValid && !isSubmitting ? 'var(--color-primary)' : 'var(--color-surface-subtle)',
+            color: isValid ? 'white' : 'var(--color-text-subtle)',
             border: 'none', borderRadius: 'var(--radius-lg)',
             padding: '15px 24px', fontSize: '16px', fontWeight: 700,
             cursor: isValid && !isSubmitting ? 'pointer' : 'not-allowed',
             transition: 'all 0.2s ease',
-            boxShadow: isValid && !isSubmitting ? 'var(--shadow-green)' : 'none',
             letterSpacing: '-0.02em',
           }}
-          onMouseEnter={e => {
-            if (isValid && !isSubmitting) {
-              (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)';
-              (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 24px rgba(16,185,129,0.40)';
-            }
-          }}
-          onMouseLeave={e => {
-            (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
-            if (isValid && !isSubmitting) (e.currentTarget as HTMLElement).style.boxShadow = 'var(--shadow-green)';
-          }}
-          onMouseDown={e => { if (isValid) (e.currentTarget as HTMLElement).style.transform = 'scale(0.98)'; }}
-          onMouseUp={e => { if (isValid) (e.currentTarget as HTMLElement).style.transform = 'translateY(-1px)'; }}
         >
           {isSubmitting ? (
             <>
@@ -362,7 +342,7 @@ export default function CheckinForm({ timing }: CheckinFormProps) {
         </button>
 
         {!isValid && (
-          <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-placeholder)', marginTop: '10px' }}>
+          <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--color-text-subtle)', marginTop: '10px' }}>
             すべての時間帯を選択してください
           </p>
         )}

@@ -25,7 +25,7 @@ export default function Logo({ size = 'md' }: LogoProps) {
       >
         <path
           d="M14 2C14 2 5 10.5 5 17C5 21.9706 9.02944 26 14 26C18.9706 26 23 21.9706 23 17C23 10.5 14 2 14 2Z"
-          fill="#2D8A5F"
+          fill="var(--color-primary, #2D8A5F)"
         />
         <path
           d="M14 26V17"
@@ -41,10 +41,9 @@ export default function Logo({ size = 'md' }: LogoProps) {
         />
       </svg>
       <span style={{
-        fontFamily: 'var(--font-body, "DM Sans", system-ui, sans-serif)',
         fontSize: `${text}px`,
         fontWeight: 700,
-        color: '#2D8A5F',
+        color: 'var(--color-primary, #2D8A5F)',
         letterSpacing: '-0.3px',
       }}>
         CareGo

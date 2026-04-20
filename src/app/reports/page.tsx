@@ -1,8 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import TopNav from '@/components/ui/TopNav';
 import { BrainCircuit, TrendingUp, Lightbulb, ArrowRight, ChevronDown } from 'lucide-react';
 import { WeeklyInsight } from '@/lib/types';
+import { Heading } from '@takaki/go-design-system';
 
 function parseInsightSections(text: string) {
   const summaryMatch = text.match(/【今週のサマリー】\s*([\s\S]*?)(?=【パターン分析】|【来週への一言】|$)/)
@@ -22,9 +22,9 @@ function parseInsightSections(text: string) {
 }
 
 const SECTION_META = [
-  { key: 'summary' as const, label: '今週のサマリー', Icon: TrendingUp, color: 'var(--text-green)', bg: 'var(--bg-green)', border: 'var(--border-green)' },
-  { key: 'insight' as const, label: 'パターン分析', Icon: Lightbulb, color: 'var(--text-amber)', bg: 'var(--bg-amber)', border: 'var(--border-amber)' },
-  { key: 'suggestion' as const, label: '来週への一言', Icon: ArrowRight, color: 'var(--text-green)', bg: 'var(--bg-green)', border: 'var(--border-green)' },
+  { key: 'summary' as const, label: '今週のサマリー', Icon: TrendingUp, color: 'var(--color-success)', bg: 'var(--color-success-subtle)', border: 'var(--color-success)' },
+  { key: 'insight' as const, label: 'パターン分析', Icon: Lightbulb, color: 'var(--color-warning)', bg: 'var(--color-warning-subtle)', border: 'var(--color-warning)' },
+  { key: 'suggestion' as const, label: '来週への一言', Icon: ArrowRight, color: 'var(--color-success)', bg: 'var(--color-success-subtle)', border: 'var(--color-success)' },
 ];
 
 function formatWeekRange(weekStart: string): string {
@@ -40,11 +40,11 @@ function InsightCard({ insight }: { insight: WeeklyInsight }) {
   const weekRange = formatWeekRange(insight.week_start);
 
   const card: React.CSSProperties = {
-    background: 'var(--bg-card)',
-    border: '1px solid var(--border-color)',
-    borderRadius: 'var(--radius-xl)',
+    background: 'var(--card)',
+    border: '1px solid var(--border)',
+    borderRadius: 'var(--radius-lg)',
     padding: '24px',
-    boxShadow: 'var(--shadow-card)',
+    boxShadow: 'var(--shadow-md)',
   };
 
   return (
@@ -54,16 +54,16 @@ function InsightCard({ insight }: { insight: WeeklyInsight }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{
             width: '34px', height: '34px', borderRadius: 'var(--radius-md)',
-            background: 'var(--bg-purple)',
+            background: 'var(--color-surface-subtle)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
           }}>
-            <BrainCircuit size={17} strokeWidth={1.8} color="var(--accent-green)" />
+            <BrainCircuit size={17} strokeWidth={1.8} color="var(--color-primary)" />
           </div>
           <div>
-            <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-secondary)', letterSpacing: '-0.01em', margin: 0 }}>
+            <p style={{ fontSize: '14px', fontWeight: 700, color: 'var(--foreground)', letterSpacing: '-0.01em', margin: 0 }}>
               週次レポート
             </p>
-            <p style={{ fontSize: '12px', color: 'var(--text-placeholder)', margin: 0 }}>
+            <p style={{ fontSize: '12px', color: 'var(--color-text-subtle)', margin: 0 }}>
               {weekRange}
             </p>
           </div>
@@ -72,11 +72,11 @@ function InsightCard({ insight }: { insight: WeeklyInsight }) {
         {insight.avg_score !== null && (
           <div style={{
             padding: '6px 14px', borderRadius: 'var(--radius-md)',
-            background: 'var(--bg-green)', border: '1px solid var(--border-green)',
+            background: 'var(--color-success-subtle)', border: '1px solid var(--color-success)',
             textAlign: 'right',
           }}>
-            <div style={{ fontSize: '10px', color: 'var(--text-green)', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>週平均</div>
-            <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-green)', letterSpacing: '-0.04em', lineHeight: 1.1 }}>
+            <div style={{ fontSize: '10px', color: 'var(--color-success)', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase' }}>週平均</div>
+            <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--color-success)', letterSpacing: '-0.04em', lineHeight: 1.1 }}>
               {Math.round(insight.avg_score)}
             </div>
           </div>
@@ -96,10 +96,10 @@ function InsightCard({ insight }: { insight: WeeklyInsight }) {
                 background: bg, border: `1px solid ${border}`,
               }}>
                 <div style={{
-                  width: '28px', height: '28px', borderRadius: 'var(--radius-sm)',
-                  background: 'var(--bg-card)', flexShrink: 0,
+                  width: '28px', height: '28px', borderRadius: 'var(--radius-md)',
+                  background: 'var(--card)', flexShrink: 0,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: 'var(--shadow-xs)', marginTop: '1px',
+                  boxShadow: 'var(--shadow-sm)', marginTop: '1px',
                 }}>
                   <Icon size={14} strokeWidth={2} color={color} />
                 </div>
@@ -110,7 +110,7 @@ function InsightCard({ insight }: { insight: WeeklyInsight }) {
                   }}>
                     {label}
                   </p>
-                  <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.75, margin: 0 }}>
+                  <p style={{ fontSize: '14px', color: 'var(--foreground)', lineHeight: 1.75, margin: 0 }}>
                     {text}
                   </p>
                 </div>
@@ -119,7 +119,7 @@ function InsightCard({ insight }: { insight: WeeklyInsight }) {
           })}
         </div>
       ) : (
-        <p style={{ fontSize: '15px', color: 'var(--text-secondary)', lineHeight: 1.8, margin: 0 }}>
+        <p style={{ fontSize: '15px', color: 'var(--foreground)', lineHeight: 1.8, margin: 0 }}>
           {insight.insight_text}
         </p>
       )}
@@ -132,50 +132,36 @@ export default async function ReportsPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
 
-  const [{ data: insights }, { data: profile }] = await Promise.all([
-    supabase.from('weekly_insights')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('week_start', { ascending: false })
-      .limit(12),
-    supabase.from('profiles').select('display_name, avatar_url').eq('id', user.id).single(),
-  ]);
-
-  // モーニング/チェックアウト完了状態（ナビ用）
-  const today = new Date().toISOString().split('T')[0];
-  const { data: todayCheckins } = await supabase
-    .from('checkins').select('timing')
-    .gte('checked_at', today + 'T00:00:00Z')
-    .lte('checked_at', today + 'T23:59:59Z');
-
-  const morningDone = (todayCheckins || []).some(c => c.timing === 'morning');
-  const eveningDone = (todayCheckins || []).some(c => c.timing === 'checkout' || c.timing === 'evening');
+  const { data: insights } = await supabase
+    .from('weekly_insights')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('week_start', { ascending: false })
+    .limit(12);
 
   const sectionLabel: React.CSSProperties = {
-    fontSize: '12px', fontWeight: 600, color: 'var(--text-placeholder)',
+    fontSize: '12px', fontWeight: 600, color: 'var(--color-text-subtle)',
     letterSpacing: '0.06em', textTransform: 'uppercase',
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg-page)' }}>
-      <TopNav morningDone={morningDone} eveningDone={eveningDone} profile={profile} userId={user.id} />
-
+    <div style={{ minHeight: '100vh', background: 'var(--background)' }}>
       <main className="page-main" style={{ maxWidth: '760px' }}>
         {/* ページヘッダー */}
         <div style={{ marginBottom: '28px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
             <div style={{
               width: '36px', height: '36px', borderRadius: 'var(--radius-md)',
-              background: 'var(--bg-purple)',
+              background: 'var(--color-surface-subtle)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <BrainCircuit size={18} strokeWidth={1.8} color="var(--accent-green)" />
+              <BrainCircuit size={18} strokeWidth={1.8} color="var(--color-primary)" />
             </div>
-            <h1 style={{ fontSize: '22px', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.03em', margin: 0 }}>
+            <Heading level={1} style={{ fontSize: '22px', fontWeight: 800, letterSpacing: '-0.03em', margin: 0 }}>
               週次レポート
-            </h1>
+            </Heading>
           </div>
-          <p style={{ fontSize: '14px', color: 'var(--text-placeholder)', marginLeft: '46px' }}>
+          <p style={{ fontSize: '14px', color: 'var(--color-text-subtle)', marginLeft: '46px' }}>
             毎週のコンディション振り返り記録
           </p>
         </div>
@@ -191,7 +177,7 @@ export default async function ReportsPage() {
                 {idx === 1 && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', margin: '8px 0 10px' }}>
                     <p style={{ ...sectionLabel, margin: 0 }}>過去のレポート</p>
-                    <ChevronDown size={13} strokeWidth={2} color="var(--text-placeholder)" />
+                    <ChevronDown size={13} strokeWidth={2} color="var(--color-text-subtle)" />
                   </div>
                 )}
                 <InsightCard insight={insight as WeeklyInsight} />
@@ -200,21 +186,21 @@ export default async function ReportsPage() {
           </div>
         ) : (
           <div style={{
-            background: 'var(--bg-card)', border: '1px solid var(--border-color)',
-            borderRadius: 'var(--radius-xl)', padding: '48px 32px',
-            boxShadow: 'var(--shadow-card)', textAlign: 'center',
+            background: 'var(--card)', border: '1px solid var(--border)',
+            borderRadius: 'var(--radius-lg)', padding: '48px 32px',
+            boxShadow: 'var(--shadow-md)', textAlign: 'center',
           }}>
             <div style={{
               width: '52px', height: '52px', borderRadius: 'var(--radius-full)',
-              background: 'var(--bg-subtle)',
+              background: 'var(--color-surface-subtle)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px',
             }}>
-              <BrainCircuit size={22} strokeWidth={1.8} color="var(--text-placeholder)" />
+              <BrainCircuit size={22} strokeWidth={1.8} color="var(--color-text-subtle)" />
             </div>
-            <p style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '8px' }}>
+            <p style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: '8px' }}>
               まだレポートがありません
             </p>
-            <p style={{ fontSize: '14px', color: 'var(--text-placeholder)', lineHeight: 1.7 }}>
+            <p style={{ fontSize: '14px', color: 'var(--color-text-subtle)', lineHeight: 1.7 }}>
               5日以上チェックインすると<br />週次レポートが生成されます
             </p>
           </div>

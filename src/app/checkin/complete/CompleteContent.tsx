@@ -44,29 +44,28 @@ export default function CompleteContent({ meditationUrl }: CompleteContentProps)
 
   return (
     <div style={{
-      minHeight: '100vh', background: 'var(--bg-page)',
+      minHeight: '100vh', background: 'var(--background)',
       display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px',
     }}>
       <div style={{
-        background: 'var(--bg-card)', border: '1px solid var(--border-color)',
-        borderRadius: 'var(--radius-2xl)', padding: '40px 36px',
+        background: 'var(--card)', border: '1px solid var(--border)',
+        borderRadius: 'var(--radius-lg)', padding: '40px 36px',
         maxWidth: '520px', width: '100%',
-        boxShadow: 'var(--shadow-modal)',
+        boxShadow: 'var(--shadow-lg)',
       }}>
         {/* 完了ヘッダー */}
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
           <div style={{
-            width: '64px', height: '64px', background: 'var(--bg-green)',
+            width: '64px', height: '64px', background: 'var(--color-success-subtle)',
             borderRadius: 'var(--radius-full)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px',
-            boxShadow: 'var(--shadow-green)',
           }}>
-            <CheckCircle size={28} strokeWidth={2} color="var(--accent-green)" />
+            <CheckCircle size={28} strokeWidth={2} color="var(--color-success)" />
           </div>
-          <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '6px', letterSpacing: '-0.03em' }}>
+          <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--foreground)', marginBottom: '6px', letterSpacing: '-0.03em' }}>
             記録しました
           </h1>
-          <p style={{ fontSize: '13px', color: 'var(--text-placeholder)', letterSpacing: '-0.01em' }}>
+          <p style={{ fontSize: '13px', color: 'var(--color-text-subtle)', letterSpacing: '-0.01em' }}>
             {isCheckout ? '夜チェックアウト完了' : '朝チェックイン完了'}
           </p>
         </div>
@@ -78,9 +77,9 @@ export default function CompleteContent({ meditationUrl }: CompleteContentProps)
             marginBottom: '24px',
           }}>
             {[
-              { label: '総合', value: score, color: 'var(--accent-green)', bg: 'var(--bg-green)', border: 'var(--border-green)', Icon: null },
-              { label: '心', value: mindScore, color: 'var(--accent-amber)', bg: 'var(--bg-amber)', border: 'var(--border-amber)', Icon: Brain },
-              { label: '体', value: bodyScore, color: 'var(--text-green)', bg: 'var(--bg-green)', border: 'var(--border-green)', Icon: Activity },
+              { label: '総合', value: score, color: 'var(--color-success)', bg: 'var(--color-success-subtle)', border: 'var(--color-success)', Icon: null },
+              { label: '心', value: mindScore, color: 'var(--color-warning)', bg: 'var(--color-warning-subtle)', border: 'var(--color-warning)', Icon: Brain },
+              { label: '体', value: bodyScore, color: 'var(--color-success)', bg: 'var(--color-success-subtle)', border: 'var(--color-success)', Icon: Activity },
             ].map(({ label, value, color, bg, border, Icon }) => (
               <div key={label} style={{
                 textAlign: 'center', padding: '14px 10px',
@@ -110,57 +109,51 @@ export default function CompleteContent({ meditationUrl }: CompleteContentProps)
 
         {/* 瞑想誘導 */}
         <div style={{
-          background: 'var(--bg-amber)', border: '1px solid var(--border-amber)',
+          background: 'var(--color-warning-subtle)', border: '1px solid var(--color-warning)',
           borderRadius: 'var(--radius-lg)', padding: '20px', marginBottom: '20px',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
             <div style={{
-              width: '28px', height: '28px', borderRadius: 'var(--radius-sm)',
-              background: 'var(--bg-card)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: 'var(--shadow-xs)',
+              width: '28px', height: '28px', borderRadius: 'var(--radius-md)',
+              background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              boxShadow: 'var(--shadow-sm)',
             }}>
-              <Wind size={14} strokeWidth={2} color="var(--accent-amber)" />
+              <Wind size={14} strokeWidth={2} color="var(--color-warning)" />
             </div>
-            <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-amber-dark)', letterSpacing: '-0.01em' }}>
+            <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-warning)', letterSpacing: '-0.01em' }}>
               瞑想タイム
             </span>
           </div>
-          <p style={{ fontSize: '13px', color: 'var(--text-amber-dark)', marginBottom: '14px', lineHeight: 1.6 }}>
+          <p style={{ fontSize: '13px', color: 'var(--foreground)', marginBottom: '14px', lineHeight: 1.6 }}>
             記録できました。このまま瞑想に進みますか？
           </p>
           <button
             onClick={handleMeditation}
             disabled={isLogging}
             style={{
-              background: 'var(--accent-amber)', color: 'white', border: 'none',
+              background: 'var(--color-warning)', color: 'white', border: 'none',
               borderRadius: 'var(--radius-md)', padding: '10px 20px',
               fontSize: '14px', fontWeight: 600,
               cursor: isLogging ? 'not-allowed' : 'pointer',
               opacity: isLogging ? 0.7 : 1,
               display: 'inline-flex', alignItems: 'center', gap: '7px',
               transition: 'all 0.15s ease',
-              boxShadow: 'var(--shadow-amber)',
               letterSpacing: '-0.01em',
             }}
-            onMouseEnter={e => { if (!isLogging) (e.currentTarget as HTMLElement).style.background = 'var(--accent-amber-hover)'; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'var(--accent-amber)'; }}
           >
             <Wind size={14} strokeWidth={2} />
             {meditationLogged ? '記録済み' : '瞑想に進む'}
           </button>
-          <p style={{ fontSize: '11px', color: 'var(--text-placeholder)', marginTop: '8px' }}>
+          <p style={{ fontSize: '11px', color: 'var(--color-text-subtle)', marginTop: '8px' }}>
             別タブでYouTubeが開き、このページはダッシュボードへ戻ります
           </p>
         </div>
 
         <Link href="/dashboard" style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
-          color: 'var(--text-muted)', fontSize: '14px', textDecoration: 'none', fontWeight: 500,
+          color: 'var(--color-text-secondary)', fontSize: '14px', textDecoration: 'none', fontWeight: 500,
           transition: 'color 0.12s ease',
-        }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)'; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)'; }}
-        >
+        }}>
           <LayoutDashboard size={14} strokeWidth={2} />
           ダッシュボードへ戻る
         </Link>

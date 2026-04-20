@@ -17,11 +17,11 @@ export default function MeditationDots({ data }: MeditationDotsProps) {
         const label = isToday ? '今日' : `${date.getMonth() + 1}/${date.getDate()}`;
 
         const dotBg = d.count >= 2
-          ? 'var(--accent-amber)'
+          ? 'var(--color-warning)'
           : d.count === 1
-            ? '#FDE68A'
-            : 'var(--bg-muted)';
-        const dotBorder = d.count >= 1 ? 'var(--border-amber)' : 'var(--border-color)';
+            ? 'var(--color-warning-subtle)'
+            : 'var(--color-surface-subtle)';
+        const dotBorder = d.count >= 1 ? 'var(--color-warning)' : 'var(--color-border-default)';
 
         return (
           <div key={d.date} style={{
@@ -30,7 +30,7 @@ export default function MeditationDots({ data }: MeditationDotsProps) {
             {/* 回数 */}
             <div style={{
               fontSize: '13px', fontWeight: d.count > 0 ? 700 : 400,
-              color: d.count > 0 ? 'var(--text-amber)' : 'var(--text-placeholder)',
+              color: d.count > 0 ? 'var(--color-warning)' : 'var(--color-text-subtle)',
               letterSpacing: '-0.02em', height: '18px',
               display: 'flex', alignItems: 'center',
             }}>
@@ -42,14 +42,13 @@ export default function MeditationDots({ data }: MeditationDotsProps) {
               width: '32px', height: '32px', borderRadius: 'var(--radius-full)',
               background: dotBg, border: `1.5px solid ${dotBorder}`,
               flexShrink: 0,
-              boxShadow: d.count > 0 ? 'var(--shadow-amber)' : 'none',
               transition: 'all 0.15s ease',
             }} />
 
             {/* 日付 */}
             <div style={{
               fontSize: '12px',
-              color: isToday ? 'var(--accent-amber)' : 'var(--text-placeholder)',
+              color: isToday ? 'var(--color-warning)' : 'var(--color-text-subtle)',
               fontWeight: isToday ? 700 : 400,
               letterSpacing: '-0.01em',
             }}>
