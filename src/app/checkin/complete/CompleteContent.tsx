@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Wind, CheckCircle, LayoutDashboard, Brain, Activity } from 'lucide-react';
 import CareComment from '@/components/ui/CareComment';
-import { Button } from '@takaki/go-design-system';
+import { Button, Card } from '@takaki/go-design-system';
 
 interface CompleteContentProps {
   meditationUrl: string;
@@ -44,38 +44,26 @@ export default function CompleteContent({ meditationUrl }: CompleteContentProps)
   };
 
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px 16px',
-    }}>
-      <div style={{
-        background: 'var(--card)', border: '1px solid var(--border)',
-        borderRadius: 'var(--radius-lg)', padding: '40px 36px',
-        maxWidth: '520px', width: '100%',
-        boxShadow: 'var(--shadow-lg)',
-      }}>
+    <div className="mx-auto max-w-lg py-4">
+      <Card className="p-10">
         {/* 完了ヘッダー */}
-        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+        <div className="flex flex-col items-center text-center mb-7">
           <div style={{
             width: '64px', height: '64px', background: 'var(--color-success-subtle)',
             borderRadius: 'var(--radius-full)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px',
           }}>
             <CheckCircle size={28} strokeWidth={2} color="var(--color-success)" />
           </div>
-          <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--foreground)', marginBottom: '6px', letterSpacing: '-0.03em' }}>
-            記録しました
-          </h1>
-          <p style={{ fontSize: '13px', color: 'var(--color-text-subtle)', letterSpacing: '-0.01em' }}>
+          <h1 className="text-xl font-bold text-foreground tracking-tight mb-1">記録しました</h1>
+          <p className="text-sm text-muted-foreground">
             {isCheckout ? '夜チェックアウト完了' : '朝チェックイン完了'}
           </p>
         </div>
 
         {/* スコア（チェックアウト時のみ） */}
         {hasScore && (
-          <div style={{
-            display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px',
-            marginBottom: '24px',
-          }}>
+          <div className="grid grid-cols-3 gap-2.5 mb-6">
             {[
               { label: '総合', value: score, color: 'var(--color-success)', bg: 'var(--color-success-subtle)', border: 'var(--color-success)', Icon: null },
               { label: '心', value: mindScore, color: 'var(--color-warning)', bg: 'var(--color-warning-subtle)', border: 'var(--color-warning)', Icon: Brain },
@@ -102,7 +90,7 @@ export default function CompleteContent({ meditationUrl }: CompleteContentProps)
 
         {/* Care コメント */}
         {comment && (
-          <div style={{ marginBottom: '24px' }}>
+          <div className="mb-6">
             <CareComment comment={comment} />
           </div>
         )}
@@ -110,9 +98,9 @@ export default function CompleteContent({ meditationUrl }: CompleteContentProps)
         {/* 瞑想誘導 */}
         <div style={{
           background: 'var(--color-warning-subtle)', border: '1px solid var(--color-warning)',
-          borderRadius: 'var(--radius-lg)', padding: '20px', marginBottom: '20px',
+          borderRadius: 'var(--radius-lg)', padding: '20px', marginBottom: '16px',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+          <div className="flex items-center gap-2 mb-2">
             <div style={{
               width: '28px', height: '28px', borderRadius: 'var(--radius-md)',
               background: 'var(--card)', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -120,13 +108,9 @@ export default function CompleteContent({ meditationUrl }: CompleteContentProps)
             }}>
               <Wind size={14} strokeWidth={2} color="var(--color-warning)" />
             </div>
-            <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-warning)', letterSpacing: '-0.01em' }}>
-              瞑想タイム
-            </span>
+            <span className="text-sm font-semibold" style={{ color: 'var(--color-warning)' }}>瞑想タイム</span>
           </div>
-          <p style={{ fontSize: '13px', color: 'var(--foreground)', marginBottom: '14px', lineHeight: 1.6 }}>
-            記録できました。このまま瞑想に進みますか？
-          </p>
+          <p className="text-sm text-foreground mb-3 leading-relaxed">記録できました。このまま瞑想に進みますか？</p>
           <Button
             onClick={handleMeditation}
             disabled={isLogging}
@@ -136,7 +120,7 @@ export default function CompleteContent({ meditationUrl }: CompleteContentProps)
             <Wind size={14} strokeWidth={2} />
             {meditationLogged ? '記録済み' : '瞑想に進む'}
           </Button>
-          <p style={{ fontSize: '11px', color: 'var(--color-text-subtle)', marginTop: '8px' }}>
+          <p className="text-xs text-muted-foreground mt-2">
             別タブでYouTubeが開き、このページはダッシュボードへ戻ります
           </p>
         </div>
@@ -147,7 +131,7 @@ export default function CompleteContent({ meditationUrl }: CompleteContentProps)
             ダッシュボードへ戻る
           </Link>
         </Button>
-      </div>
+      </Card>
     </div>
   );
 }

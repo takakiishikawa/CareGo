@@ -27,106 +27,6 @@
   --font-sans: var(--font-dm-sans), "DM Sans", system-ui, sans-serif;
 }
 
-/* ── Layout ── */
-/* AppLayout already provides p-4 (16px) on all sides;
-   these classes add max-width + vertical breathing room only */
-.page-main {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 12px 0 56px;
-}
-
-.checkin-main {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 24px 0 40px;
-}
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.dashboard-top-grid {
-  display: grid;
-  grid-template-columns: 1fr 1.4fr;
-  gap: 16px;
-  margin-bottom: 16px;
-  align-items: stretch;
-}
-
-@media (max-width: 768px) {
-  .page-main {
-    padding: 8px 0 40px;
-  }
-  .checkin-main {
-    padding: 12px 0 32px;
-  }
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-  .dashboard-top-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ── Concept page ── */
-.concept-main {
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 36px 0 64px;
-}
-
-.concept-scope-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.concept-flow-grid {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr auto 1fr;
-  align-items: center;
-  gap: 8px;
-}
-
-.concept-metrics-grid {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 20px;
-}
-
-/* ── Mobile overrides ── */
-@media (max-width: 640px) {
-  .checkin-card {
-    padding: 20px 16px !important;
-  }
-  .concept-main {
-    padding: 20px 0 48px;
-  }
-  .concept-scope-grid {
-    grid-template-columns: 1fr;
-  }
-  .concept-flow-grid {
-    grid-template-columns: 1fr;
-    gap: 4px;
-  }
-  .concept-flow-grid .flow-arrow {
-    transform: rotate(90deg);
-    justify-self: center;
-  }
-  .concept-metrics-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  .concept-metrics-grid .metrics-arrow {
-    display: none;
-  }
-}
-
 /* ── Recharts overrides ── */
 .recharts-surface { overflow: visible; }
 .recharts-cartesian-axis-tick-value {
@@ -139,21 +39,6 @@
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to   { opacity: 1; transform: scale(1); }
 }
 
 @keyframes spin {

@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { TrendingUp, Brain, Activity } from 'lucide-react';
+import { Card, PageHeader } from '@takaki/go-design-system';
 import CareComment from '@/components/ui/CareComment';
 import ScoreLineChart from '@/components/dashboard/ScoreLineChart';
 import MeditationDots from '@/components/dashboard/MeditationDots';
@@ -43,17 +44,14 @@ export default async function DashboardPage() {
   const { data: weeklyInsight } = await supabase
     .from('weekly_insights').select('*').eq('week_start', weekStartStr).single();
 
-  // 今日
   const todayCheckins = (checkins || []).filter(c => c.checked_at.startsWith(today));
   const morningCheckin = todayCheckins.find(c => c.timing === 'morning');
-  // backward compat: treat old 'evening' records as checkout
   const checkoutCheckin = todayCheckins.find(c => c.timing === 'checkout' || c.timing === 'evening');
   const latestCheckin = checkoutCheckin || morningCheckin;
   const todayScore = latestCheckin?.condition_score ?? null;
   const todayMindScore = checkoutCheckin?.mind_score ?? null;
   const todayBodyScore = checkoutCheckin?.body_score ?? null;
 
-  // 昨日
   const yesterdayStr = last7Days[last7Days.length - 2];
   const yesterdayCheckins = (checkins || []).filter(c => c.checked_at.startsWith(yesterdayStr));
   const yesterdayLatest =
@@ -62,7 +60,6 @@ export default async function DashboardPage() {
   const yesterdayScore = yesterdayLatest?.condition_score ?? null;
   const scoreDiff = todayScore !== null && yesterdayScore !== null ? todayScore - yesterdayScore : null;
 
-  // 7日間スコアデータ（最新チェックイン）
   const scoreData: DailyScore[] = last7Days.map(date => {
     const day = (checkins || []).filter(c => c.checked_at.startsWith(date));
     const checkout = day.find(c => c.timing === 'checkout' || c.timing === 'evening');
@@ -111,28 +108,10 @@ export default async function DashboardPage() {
 
   const weekDiff = thisWeekAvg !== null && lastWeekAvg !== null ? thisWeekAvg - lastWeekAvg : null;
 
-  const card: React.CSSProperties = {
-    background: 'var(--card)',
-    border: '1px solid var(--border)',
-    borderRadius: 'var(--radius-lg)',
-    padding: '24px',
-    boxShadow: 'var(--shadow-md)',
-    display: 'flex',
-    flexDirection: 'column',
-  };
-
-  const sectionLabel: React.CSSProperties = {
-    fontSize: '12px',
-    fontWeight: 600,
-    color: 'var(--color-text-subtle)',
-    letterSpacing: '0.06em',
-    textTransform: 'uppercase',
-    marginBottom: '12px',
-  };
-
   return (
     <>
-      <div className="page-main">
+      <div className="space-y-4">
+        <PageHeader title="ダッシュボード" />
 
         {showCTA && (
           <CheckinCTABanner
@@ -142,28 +121,23 @@ export default async function DashboardPage() {
           />
         )}
 
-        {/* 上段：左（スコア）| 右（グラフ） */}
-        <div className="dashboard-top-grid">
+        {/* 上段：スコア | グラフ */}
+        <div className="grid grid-cols-1 md:grid-cols-[5fr_7fr] gap-4">
 
-          {/* 左：本日のコンディション */}
-          <div style={card}>
-            <p style={sectionLabel}>今日のコンディション</p>
+          {/* 今日のコンディション */}
+          <Card className="flex flex-col p-6">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-4">今日のコンディション</p>
 
             {latestCheckin ? (
               <>
-                {/* 総合スコア + 前日比 */}
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: '12px', marginBottom: '16px' }}>
-                  <div style={{
-                    fontSize: '72px', fontWeight: 800, lineHeight: 1,
-                    color: 'var(--foreground)', letterSpacing: '-4px',
-                    fontVariantNumeric: 'tabular-nums',
-                  }}>
+                <div className="flex items-end gap-3 mb-4">
+                  <span className="text-7xl font-extrabold leading-none tracking-tighter tabular-nums text-foreground">
                     {todayScore ?? '–'}
-                  </div>
-                  <div style={{ paddingBottom: '8px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                    {scoreDiff !== null && (
+                  </span>
+                  {scoreDiff !== null && (
+                    <div className="flex flex-col gap-1 pb-2">
                       <span style={{
-                        fontSize: '14px', fontWeight: 700, lineHeight: 1.2,
+                        fontSize: '14px', fontWeight: 700,
                         color: diffColor,
                         background: scoreDiff > 0 ? 'var(--color-success-subtle)' : scoreDiff < 0 ? 'var(--color-warning-subtle)' : 'var(--color-surface-subtle)',
                         padding: '2px 8px', borderRadius: 'var(--radius-full)',
@@ -171,13 +145,12 @@ export default async function DashboardPage() {
                       }}>
                         {scoreDiff > 0 ? `+${scoreDiff}` : scoreDiff === 0 ? '±0' : scoreDiff}
                       </span>
-                    )}
-                    <span style={{ fontSize: '12px', color: 'var(--color-text-subtle)', letterSpacing: '-0.01em' }}>前日比</span>
-                  </div>
+                      <span className="text-xs text-muted-foreground">前日比</span>
+                    </div>
+                  )}
                 </div>
 
-                {/* 心スコア・体スコアバッジ */}
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+                <div className="flex gap-2 mb-4">
                   {([
                     { Icon: Brain, label: '心', score: todayMindScore, color: 'var(--color-warning)', bg: 'var(--color-warning-subtle)', border: 'var(--color-warning)' },
                     { Icon: Activity, label: '体', score: todayBodyScore, color: 'var(--color-success)', bg: 'var(--color-success-subtle)', border: 'var(--color-success)' },
@@ -192,54 +165,41 @@ export default async function DashboardPage() {
                         <Icon size={13} strokeWidth={2} color={score !== null ? color : 'var(--color-text-subtle)'} />
                         <span style={{ fontSize: '13px', color: score !== null ? color : 'var(--color-text-secondary)', fontWeight: 500 }}>{label}</span>
                       </div>
-                      <span style={{
-                        fontSize: '17px', fontWeight: 700, letterSpacing: '-0.03em',
-                        color: score !== null ? color : 'var(--color-text-subtle)',
-                      }}>
+                      <span style={{ fontSize: '17px', fontWeight: 700, letterSpacing: '-0.03em', color: score !== null ? color : 'var(--color-text-subtle)' }}>
                         {score ?? '–'}
                       </span>
                     </div>
                   ))}
                 </div>
 
-                {/* Careのひとこと */}
                 {latestCheckin.ai_comment && (
-                  <div style={{
-                    borderTop: '1px solid var(--border)', paddingTop: '16px', flex: 1,
-                  }}>
+                  <div className="border-t pt-4 flex-1">
                     <CareComment comment={latestCheckin.ai_comment} compact />
                   </div>
                 )}
               </>
             ) : (
-              <div style={{
-                flex: 1, display: 'flex', flexDirection: 'column',
-                alignItems: 'center', justifyContent: 'center',
-                gap: '12px', padding: '32px 0',
-              }}>
+              <div className="flex-1 flex flex-col items-center justify-center gap-3 py-8">
                 <div style={{
                   width: '52px', height: '52px', borderRadius: 'var(--radius-full)',
                   background: 'var(--color-success-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
                   <TrendingUp size={22} strokeWidth={1.8} color="var(--color-success)" />
                 </div>
-                <p style={{ fontSize: '14px', color: 'var(--color-text-subtle)', textAlign: 'center', lineHeight: 1.6 }}>
+                <p className="text-sm text-muted-foreground text-center leading-relaxed">
                   今日のチェックインが<br />まだありません
                 </p>
               </div>
             )}
-          </div>
+          </Card>
 
-          {/* 右：コンディションスコアグラフ */}
-          <div style={card}>
-            <div style={{
-              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              marginBottom: '4px', flexShrink: 0,
-            }}>
-              <p style={{ ...sectionLabel, marginBottom: 0 }}>スコア推移（7日間）</p>
+          {/* スコア推移グラフ */}
+          <Card className="flex flex-col p-6">
+            <div className="flex items-center justify-between mb-1 shrink-0">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">スコア推移（7日間）</p>
               {thisWeekAvg !== null && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '13px', color: 'var(--color-text-subtle)' }}>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">
                     今週平均{' '}
                     <span style={{ color: 'var(--color-success)', fontWeight: 700, fontSize: '15px' }}>{thisWeekAvg}</span>
                   </span>
@@ -257,32 +217,30 @@ export default async function DashboardPage() {
                 </div>
               )}
             </div>
-            <div style={{ flex: 1, minHeight: '220px' }}>
+            <div className="flex-1 min-h-[220px]">
               <ScoreLineChart data={scoreData} fillHeight />
             </div>
-          </div>
+          </Card>
         </div>
 
-        {/* 下段：左（瞑想）| 右（週次レポート） */}
-        <div className="dashboard-grid">
-          {/* 左：瞑想ドット */}
-          <div style={card}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <p style={{ ...sectionLabel, marginBottom: 0 }}>瞑想（7日間）</p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ fontSize: '13px', color: 'var(--color-text-subtle)' }}>今週</span>
+        {/* 下段：瞑想 | 週次レポート */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">瞑想（7日間）</p>
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm text-muted-foreground">今週</span>
                 <span style={{
-                  fontSize: '15px', fontWeight: 700, color: totalMeditations > 0 ? 'var(--color-warning)' : 'var(--color-text-subtle)',
-                  letterSpacing: '-0.02em',
+                  fontSize: '15px', fontWeight: 700, letterSpacing: '-0.02em',
+                  color: totalMeditations > 0 ? 'var(--color-warning)' : 'var(--color-text-subtle)',
                 }}>
                   {totalMeditations}回
                 </span>
               </div>
             </div>
             <MeditationDots data={meditationData} />
-          </div>
+          </Card>
 
-          {/* 右：週次レポートプレビュー */}
           <WeeklyInsightCard
             insight={weeklyInsight}
             thisWeekAvg={thisWeekAvg}
