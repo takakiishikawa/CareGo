@@ -149,15 +149,50 @@ npm update @takaki/go-design-system
 - プロダクト名：`CareGo`
 - プライマリカラー：`#2D8A5F`（フォレストグリーン — 健康・自己ケア・落ち着きを連想。wellness/health文脈でも定番の色相）
 - ドメイン：`https://care-go.vercel.app`
-- データモデルの概要：
-  - `checkins` テーブル：朝チェックイン／夜チェックアウトの記録（timing, mood, scores, activities, AI comment）
-  - `meditations` テーブル：瞑想ログ（日付、タイミング）
-  - `profiles` テーブル：ユーザープロフィール（表示名）
-  - `push_subscriptions` テーブル：Web Push 通知購読
 - 外部連携：
   - **Supabase** — 認証（Google OAuth）・DB・Row Level Security
   - **Anthropic Claude API** — チェックイン後のAIコメント生成（CareキャラクターとしてPromptを設定）
   - **Web Push** — 朝のチェックインリマインダー（cron: 毎日10:00 JST）
+
+## データベーススキーマ
+
+**全テーブルは `carego` スキーマに存在する。`public` スキーマは使用しない。**
+
+### テーブル一覧
+
+| テーブル | 用途 |
+|---|---|
+| `carego.checkins` | 朝チェックイン／夜チェックアウトの記録（timing, time_period_ratings, activity_tags, condition_score, mind_score, body_score, ai_comment） |
+| `carego.meditation_logs` | 瞑想ログ（timing, checkin_id, logged_at） |
+| `carego.profiles` | ユーザープロフィール（display_name, avatar_url） |
+| `carego.push_subscriptions` | Web Push 通知購読（endpoint, p256dh, auth, notification_time） |
+| `carego.settings` | アプリ設定（key-value形式。meditation_url など） |
+| `carego.user_tags` | ユーザー定義の活動タグ（tag_name, tag_type） |
+| `carego.weekly_insights` | AIが生成した週次レポート（week_start, insight_text, avg_score） |
+
+### Supabase クライアントの設定
+
+全クライアント（`client.ts` / `server.ts` / `admin.ts` / `proxy.ts`）に `db: { schema: 'carego' }` が設定されている。
+新しくクライアントを生成する際は必ずこの設定を含めること。
+
+```ts
+createClient(url, key, { db: { schema: 'carego' }, ... })
+```
+
+### 新規テーブルを追加する場合
+
+```sql
+-- ✅ carego スキーマに作成する
+CREATE TABLE carego.new_table (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE,
+  created_at timestamptz DEFAULT now()
+);
+
+ALTER TABLE carego.new_table ENABLE ROW LEVEL SECURITY;
+```
+
+`public.new_table` は絶対に作らない。
 
 ## 作業時の判断基準
 
