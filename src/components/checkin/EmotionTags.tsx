@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@takaki/go-design-system";
 
 const EMOTION_TAGS = [
   "穏やか",
@@ -79,7 +80,7 @@ function TagButton({
     : "var(--color-warning)";
 
   return (
-    <button
+    <Button
       type="button"
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
@@ -110,7 +111,7 @@ function TagButton({
       }}
     >
       {label}
-    </button>
+    </Button>
   );
 }
 

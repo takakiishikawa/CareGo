@@ -48,28 +48,28 @@ const GO_APPS = [
   {
     name: "NativeGo",
     url: "https://english-learning-app-black.vercel.app/",
-    color: "#0052CC",
+    color: "var(--color-primary)",
   },
   {
     name: "CareGo",
     url: "https://care-go-mu.vercel.app/dashboard",
-    color: "#2D8A5F",
+    color: "var(--color-success)",
   },
   {
     name: "KenyakuGo",
     url: "https://kenyaku-go.vercel.app/",
-    color: "#F5A623",
+    color: "var(--color-warning)",
   },
-  { name: "TaskGo", url: "https://taskgo-dun.vercel.app/", color: "#5E6AD2" },
+  { name: "TaskGo", url: "https://taskgo-dun.vercel.app/", color: "var(--color-accent)" },
   {
     name: "CookGo",
     url: "https://cook-go-lovat.vercel.app/dashboard",
-    color: "#1AD1A5",
+    color: "var(--color-info)",
   },
   {
     name: "PhysicalGo",
     url: "https://physical-go.vercel.app/dashboard",
-    color: "#FF6B6B",
+    color: "var(--color-error)",
   },
 ] as const;
 
@@ -375,13 +375,14 @@ export function CareGoSidebar() {
                   className="hidden"
                   onChange={handleFileChange}
                 />
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => fileInputRef.current?.click()}
-                  className="text-xs text-primary hover:underline"
+                  className="h-auto p-0 text-xs text-primary hover:underline"
                 >
                   画像を変更
-                </button>
+                </Button>
               </div>
             </div>
             <div className="space-y-1.5">

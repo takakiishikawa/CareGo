@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "@takaki/go-design-system";
 import MoodFace from "./MoodFaces";
 
 const MOOD_LABELS: Record<number, string> = {
@@ -29,7 +30,7 @@ function MoodButton({
   const [pressed, setPressed] = useState(false);
 
   return (
-    <button
+    <Button
       onClick={onClick}
       type="button"
       onMouseEnter={() => setHovered(true)}
@@ -75,7 +76,7 @@ function MoodButton({
       >
         {MOOD_LABELS[score]}
       </div>
-    </button>
+    </Button>
   );
 }
 

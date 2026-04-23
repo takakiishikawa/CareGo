@@ -55,7 +55,7 @@ export default function InsightPopup({
         position: "fixed",
         inset: 0,
         zIndex: 50,
-        background: "rgba(9,30,66,0.5)",
+        background: "var(--color-overlay)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

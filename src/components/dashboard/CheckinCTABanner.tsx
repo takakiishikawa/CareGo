@@ -40,7 +40,7 @@ export default function CheckinCTABanner({
           width: "120px",
           height: "120px",
           borderRadius: "50%",
-          background: "rgba(255,255,255,0.06)",
+          background: "var(--color-overlay-light)",
           pointerEvents: "none",
         }}
       />
@@ -58,7 +58,7 @@ export default function CheckinCTABanner({
             width: "44px",
             height: "44px",
             borderRadius: "var(--radius-lg)",
-            background: "rgba(255,255,255,0.15)",
+            background: "var(--color-overlay-light)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -97,8 +97,8 @@ export default function CheckinCTABanner({
         className="text-white shrink-0"
         style={
           {
-            background: "rgba(255,255,255,0.15)",
-            border: "1px solid rgba(255,255,255,0.25)",
+            background: "var(--color-overlay-light)",
+            border: "1px solid var(--color-overlay-medium)",
           } as React.CSSProperties
         }
       >
