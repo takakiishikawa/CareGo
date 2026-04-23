@@ -9,33 +9,33 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.82.0",
+    "@anthropic-ai/sdk": "^0.90.0",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@supabase/ssr": "^0.10.0",
-    "@supabase/supabase-js": "^2.101.1",
-    "@tailwindcss/postcss": "^4",
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.104.0",
+    "@tailwindcss/postcss": "^4.2.4",
     "@takaki/go-design-system": "github:takakiishikawa/go-design-system",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/web-push": "^3.6.4",
     "date-fns": "^3.6.0",
-    "lucide-react": "^1.7.0",
-    "next": "16.2.2",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
+    "lucide-react": "^1.8.0",
+    "next": "^16.2.4",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
     "react-dropzone": "^15.0.0",
-    "react-hook-form": "^7.72.1",
+    "react-hook-form": "^7.73.1",
     "recharts": "^3.8.1",
-    "tailwindcss": "^4",
+    "tailwindcss": "^4.2.4",
     "typescript": "^5",
     "web-push": "^3.6.7",
     "zod": "^3.0.0"
   },
   "devDependencies": {
     "eslint": "^9",
-    "eslint-config-next": "16.2.2"
+    "eslint-config-next": "^16.2.4"
   }
 }
