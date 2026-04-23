@@ -62,7 +62,7 @@
 
 /* CareGo primary color — forest green, calming & health-focused */
 :root {
-  --color-primary: #2D8A5F;
+  --color-primary: #2d8a5f;
   --color-primary-hover: #226b49;
 }
 
@@ -83,7 +83,9 @@
 }
 
 /* ── Recharts overrides ── */
-.recharts-surface { overflow: visible; }
+.recharts-surface {
+  overflow: visible;
+}
 .recharts-cartesian-axis-tick-value {
   font-family: "DM Sans", system-ui, sans-serif;
   font-size: 13px;
@@ -92,11 +94,20 @@
 
 /* ── Animations ── */
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }

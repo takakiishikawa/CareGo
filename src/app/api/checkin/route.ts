@@ -1,25 +1,25 @@
-import { createClient } from '@/lib/supabase/server';
-import { NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
-import { Rating, TimePeriodRatings } from '@/lib/types';
-import { ANTHROPIC_MODEL } from '@/lib/constants';
-import { countTags, topTagsText } from '@/lib/tag-utils';
+import { createClient } from "@/lib/supabase/server";
+import { NextResponse } from "next/server";
+import Anthropic from "@anthropic-ai/sdk";
+import { Rating, TimePeriodRatings } from "@/lib/types";
+import { ANTHROPIC_MODEL } from "@/lib/constants";
+import { countTags, topTagsText } from "@/lib/tag-utils";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const PERIOD_LABELS: Record<string, string> = {
-  last_night:   '昨夜',
-  this_morning: '今朝',
-  morning:      '午前',
-  afternoon:    '午後',
-  evening:      '夕方',
-  night:        '夜',
+  last_night: "昨夜",
+  this_morning: "今朝",
+  morning: "午前",
+  afternoon: "午後",
+  evening: "夕方",
+  night: "夜",
 };
 
 const RATING_LABEL: Record<Rating, string> = {
-  A: '良い',
-  B: '普通',
-  C: '悪い',
+  A: "良い",
+  B: "普通",
+  C: "悪い",
 };
 
 /** Careのシステムプロンプト（固定コンテキスト含む） */
@@ -72,15 +72,18 @@ A評価=良い(+)、B評価=普通(0)、C評価=悪い(-)として総合判断�
 
 function ratingsToText(ratings: TimePeriodRatings): string {
   return Object.entries(ratings)
-    .map(([key, val]) => `${PERIOD_LABELS[key] ?? key}: ${RATING_LABEL[val]}(${val})`)
-    .join('、');
+    .map(
+      ([key, val]) =>
+        `${PERIOD_LABELS[key] ?? key}: ${RATING_LABEL[val]}(${val})`,
+    )
+    .join("、");
 }
 
 function formatHCMTime(isoStr: string): string {
   const d = new Date(isoStr);
   const h = (d.getUTCHours() + 7) % 24;
   const m = d.getUTCMinutes();
-  return `${h}:${String(m).padStart(2, '0')}`;
+  return `${h}:${String(m).padStart(2, "0")}`;
 }
 
 async function calculateScoresWithAI(
@@ -91,31 +94,46 @@ async function calculateScoresWithAI(
   checkoutTags: string[],
   checkoutText: string | null,
   recentScores: string,
-): Promise<{ condition_score: number; mind_score: number; body_score: number }> {
+): Promise<{
+  condition_score: number;
+  mind_score: number;
+  body_score: number;
+}> {
   const dataStr = [
     morningRatings ? `朝チェックイン: ${ratingsToText(morningRatings)}` : null,
-    morningTags.length ? `朝の活動: ${morningTags.join('、')}` : null,
+    morningTags.length ? `朝の活動: ${morningTags.join("、")}` : null,
     morningText ? `朝のメモ: ${morningText}` : null,
     `夜チェックアウト: ${ratingsToText(checkoutRatings)}`,
-    checkoutTags.length ? `今日の活動: ${checkoutTags.join('、')}` : null,
+    checkoutTags.length ? `今日の活動: ${checkoutTags.join("、")}` : null,
     checkoutText ? `夜のメモ: ${checkoutText}` : null,
     recentScores ? `直近スコア推移: ${recentScores}` : null,
-  ].filter(Boolean).join('\n');
+  ]
+    .filter(Boolean)
+    .join("\n");
 
   const msg = await anthropic.messages.create({
     model: ANTHROPIC_MODEL,
     max_tokens: 100,
-    messages: [{ role: 'user', content: dataStr }],
+    messages: [{ role: "user", content: dataStr }],
     system: SCORE_SYSTEM_PROMPT,
   });
 
-  const text = msg.content[0].type === 'text' ? msg.content[0].text : '{}';
+  const text = msg.content[0].type === "text" ? msg.content[0].text : "{}";
   try {
-    const parsed = JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] ?? '{}');
+    const parsed = JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] ?? "{}");
     return {
-      condition_score: Math.min(100, Math.max(0, Math.round(parsed.condition_score ?? 50))),
-      mind_score: Math.min(100, Math.max(0, Math.round(parsed.mind_score ?? 50))),
-      body_score: Math.min(100, Math.max(0, Math.round(parsed.body_score ?? 50))),
+      condition_score: Math.min(
+        100,
+        Math.max(0, Math.round(parsed.condition_score ?? 50)),
+      ),
+      mind_score: Math.min(
+        100,
+        Math.max(0, Math.round(parsed.mind_score ?? 50)),
+      ),
+      body_score: Math.min(
+        100,
+        Math.max(0, Math.round(parsed.body_score ?? 50)),
+      ),
     };
   } catch {
     return { condition_score: 50, mind_score: 50, body_score: 50 };
@@ -123,68 +141,83 @@ async function calculateScoresWithAI(
 }
 
 async function generateCareComment(
-  timing: 'morning' | 'checkout',
+  timing: "morning" | "checkout",
   ratings: TimePeriodRatings,
   activityTags: string[],
   freeText: string | null,
   checkedAt: string,
-  recentCheckins: Array<{ checked_at: string; condition_score: number | null; activity_tags: string[] }>,
-  morningContext?: { ratings: TimePeriodRatings; tags: string[]; text: string | null },
+  recentCheckins: Array<{
+    checked_at: string;
+    condition_score: number | null;
+    activity_tags: string[];
+  }>,
+  morningContext?: {
+    ratings: TimePeriodRatings;
+    tags: string[];
+    text: string | null;
+  },
 ): Promise<string> {
   const timeStr = formatHCMTime(checkedAt);
-  const label = timing === 'morning' ? '朝チェックイン' : '夜チェックアウト';
+  const label = timing === "morning" ? "朝チェックイン" : "夜チェックアウト";
 
   const scoreHistory = recentCheckins
-    .filter(c => c.condition_score !== null)
+    .filter((c) => c.condition_score !== null)
     .slice(-7)
-    .map(c => {
+    .map((c) => {
       const d = new Date(c.checked_at);
       return `${d.getMonth() + 1}/${d.getDate()}: ${c.condition_score}点`;
     })
-    .join(', ');
+    .join(", ");
 
-  const tagCounts = countTags(recentCheckins.map(c => c.activity_tags));
+  const tagCounts = countTags(recentCheckins.map((c) => c.activity_tags));
   const topTags = topTagsText(tagCounts, 6);
 
   const lines: string[] = [
     `${label}（${timeStr}）`,
     `評価: ${ratingsToText(ratings)}`,
-    activityTags.length ? `今日の活動: ${activityTags.join('、')}` : '',
-    freeText ? `メモ: ${freeText}` : '',
+    activityTags.length ? `今日の活動: ${activityTags.join("、")}` : "",
+    freeText ? `メモ: ${freeText}` : "",
   ];
 
   if (morningContext) {
     lines.push(`朝の評価: ${ratingsToText(morningContext.ratings)}`);
-    if (morningContext.tags.length) lines.push(`朝の活動: ${morningContext.tags.join('、')}`);
+    if (morningContext.tags.length)
+      lines.push(`朝の活動: ${morningContext.tags.join("、")}`);
     if (morningContext.text) lines.push(`朝のメモ: ${morningContext.text}`);
   }
 
-  lines.push('');
-  lines.push(`直近スコア: ${scoreHistory || 'データなし'}`);
-  lines.push(`よく見られた活動: ${topTags || 'データなし'}`);
+  lines.push("");
+  lines.push(`直近スコア: ${scoreHistory || "データなし"}`);
+  lines.push(`よく見られた活動: ${topTags || "データなし"}`);
 
   const msg = await anthropic.messages.create({
     model: ANTHROPIC_MODEL,
     max_tokens: 300,
-    messages: [{ role: 'user', content: lines.filter(Boolean).join('\n') }],
+    messages: [{ role: "user", content: lines.filter(Boolean).join("\n") }],
     system: CARE_SYSTEM_PROMPT,
   });
 
   const content = msg.content[0];
-  return content.type === 'text' ? content.text : 'お疲れさまです。';
+  return content.type === "text" ? content.text : "お疲れさまです。";
 }
 
 export async function POST(request: Request) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!user)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await request.json();
   const { time_period_ratings, activity_tags = [], free_text, timing } = body;
 
-  if (!time_period_ratings || typeof time_period_ratings !== 'object') {
-    return NextResponse.json({ error: 'time_period_ratings is required' }, { status: 400 });
+  if (!time_period_ratings || typeof time_period_ratings !== "object") {
+    return NextResponse.json(
+      { error: "time_period_ratings is required" },
+      { status: 400 },
+    );
   }
 
   const checkedAt = new Date().toISOString();
@@ -193,21 +226,25 @@ export async function POST(request: Request) {
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
   const { data: recentCheckins } = await supabase
-    .from('checkins')
-    .select('checked_at, condition_score, activity_tags, time_period_ratings, timing, free_text')
-    .gte('checked_at', sevenDaysAgo.toISOString())
-    .order('checked_at', { ascending: true });
+    .from("checkins")
+    .select(
+      "checked_at, condition_score, activity_tags, time_period_ratings, timing, free_text",
+    )
+    .gte("checked_at", sevenDaysAgo.toISOString())
+    .order("checked_at", { ascending: true });
 
   let condition_score: number | null = null;
   let mind_score: number | null = null;
   let body_score: number | null = null;
-  let morningContext: { ratings: TimePeriodRatings; tags: string[]; text: string | null } | undefined;
+  let morningContext:
+    | { ratings: TimePeriodRatings; tags: string[]; text: string | null }
+    | undefined;
 
-  if (timing === 'checkout') {
+  if (timing === "checkout") {
     // 今日の朝チェックインを取得
-    const todayStr = checkedAt.split('T')[0];
+    const todayStr = checkedAt.split("T")[0];
     const todayMorning = (recentCheckins || []).find(
-      c => c.checked_at.startsWith(todayStr) && (c.timing === 'morning')
+      (c) => c.checked_at.startsWith(todayStr) && c.timing === "morning",
     );
 
     if (todayMorning) {
@@ -220,10 +257,13 @@ export async function POST(request: Request) {
 
     // スコア推移テキスト
     const scoreHistory = (recentCheckins || [])
-      .filter(c => c.condition_score !== null)
+      .filter((c) => c.condition_score !== null)
       .slice(-7)
-      .map(c => `${new Date(c.checked_at).getMonth() + 1}/${new Date(c.checked_at).getDate()}: ${c.condition_score}点`)
-      .join(', ');
+      .map(
+        (c) =>
+          `${new Date(c.checked_at).getMonth() + 1}/${new Date(c.checked_at).getDate()}: ${c.condition_score}点`,
+      )
+      .join(", ");
 
     // AIで3スコア算出
     const scores = await calculateScoresWithAI(
@@ -253,7 +293,7 @@ export async function POST(request: Request) {
   );
 
   const { data, error } = await supabase
-    .from('checkins')
+    .from("checkins")
     .insert({
       user_id: user.id,
       timing,

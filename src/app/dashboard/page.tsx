@@ -1,21 +1,29 @@
-import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
-import { TrendingUp, Brain, Activity, Wind } from 'lucide-react';
-import { Card, CardHeader, CardContent, CardDescription, PageHeader } from '@takaki/go-design-system';
-import CareComment from '@/components/ui/CareComment';
-import ScoreLineChart from '@/components/dashboard/ScoreLineChart';
-import MeditationDots from '@/components/dashboard/MeditationDots';
-import WeeklyInsightCard from '@/components/dashboard/WeeklyInsightCard';
-import InsightPopup from '@/components/dashboard/InsightPopup';
-import CheckinCTABanner from '@/components/dashboard/CheckinCTABanner';
-import { DailyScore, DailyMeditation } from '@/lib/types';
-import { getCheckinWindow, getLast7DaysHCM, getTodayHCM } from '@/lib/timing';
-import Link from 'next/link';
+import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import { TrendingUp, Brain, Activity, Wind } from "lucide-react";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardDescription,
+  PageHeader,
+} from "@takaki/go-design-system";
+import CareComment from "@/components/ui/CareComment";
+import ScoreLineChart from "@/components/dashboard/ScoreLineChart";
+import MeditationDots from "@/components/dashboard/MeditationDots";
+import WeeklyInsightCard from "@/components/dashboard/WeeklyInsightCard";
+import InsightPopup from "@/components/dashboard/InsightPopup";
+import CheckinCTABanner from "@/components/dashboard/CheckinCTABanner";
+import { DailyScore, DailyMeditation } from "@/lib/types";
+import { getCheckinWindow, getLast7DaysHCM, getTodayHCM } from "@/lib/timing";
+import Link from "next/link";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect('/login');
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
 
   const today = getTodayHCM();
   const last7Days = getLast7DaysHCM();
@@ -23,16 +31,27 @@ export default async function DashboardPage() {
 
   const fourteenDaysAgoDate = new Date();
   fourteenDaysAgoDate.setDate(fourteenDaysAgoDate.getDate() - 14);
-  const fourteenDaysAgo = fourteenDaysAgoDate.toISOString().split('T')[0];
+  const fourteenDaysAgo = fourteenDaysAgoDate.toISOString().split("T")[0];
 
   const [
     { data: checkins },
     { data: prevWeekCheckins },
     { data: meditationLogs },
   ] = await Promise.all([
-    supabase.from('checkins').select('*').gte('checked_at', sevenDaysAgo + 'T00:00:00Z').order('checked_at', { ascending: false }),
-    supabase.from('checkins').select('condition_score').gte('checked_at', fourteenDaysAgo + 'T00:00:00Z').lt('checked_at', sevenDaysAgo + 'T00:00:00Z'),
-    supabase.from('meditation_logs').select('*').gte('logged_at', sevenDaysAgo + 'T00:00:00Z'),
+    supabase
+      .from("checkins")
+      .select("*")
+      .gte("checked_at", sevenDaysAgo + "T00:00:00Z")
+      .order("checked_at", { ascending: false }),
+    supabase
+      .from("checkins")
+      .select("condition_score")
+      .gte("checked_at", fourteenDaysAgo + "T00:00:00Z")
+      .lt("checked_at", sevenDaysAgo + "T00:00:00Z"),
+    supabase
+      .from("meditation_logs")
+      .select("*")
+      .gte("logged_at", sevenDaysAgo + "T00:00:00Z"),
   ]);
 
   // 週次インサイト
@@ -41,15 +60,22 @@ export default async function DashboardPage() {
   const mondayOffset = dow === 0 ? -6 : 1 - dow;
   const weekStart = new Date(now.getTime() + 7 * 3600000);
   weekStart.setUTCDate(weekStart.getUTCDate() + mondayOffset);
-  const weekStartStr = weekStart.toISOString().split('T')[0];
+  const weekStartStr = weekStart.toISOString().split("T")[0];
 
   const { data: weeklyInsight } = await supabase
-    .from('weekly_insights').select('*').eq('week_start', weekStartStr).single();
+    .from("weekly_insights")
+    .select("*")
+    .eq("week_start", weekStartStr)
+    .single();
 
   // 今日のチェックイン
-  const todayCheckins = (checkins || []).filter(c => c.checked_at.startsWith(today));
-  const morningCheckin = todayCheckins.find(c => c.timing === 'morning');
-  const checkoutCheckin = todayCheckins.find(c => c.timing === 'checkout' || c.timing === 'evening');
+  const todayCheckins = (checkins || []).filter((c) =>
+    c.checked_at.startsWith(today),
+  );
+  const morningCheckin = todayCheckins.find((c) => c.timing === "morning");
+  const checkoutCheckin = todayCheckins.find(
+    (c) => c.timing === "checkout" || c.timing === "evening",
+  );
   const latestCheckin = checkoutCheckin || morningCheckin;
   const todayScore = latestCheckin?.condition_score ?? null;
   const todayMindScore = checkoutCheckin?.mind_score ?? null;
@@ -57,18 +83,26 @@ export default async function DashboardPage() {
 
   // 前日比
   const yesterdayStr = last7Days[last7Days.length - 2];
-  const yesterdayCheckins = (checkins || []).filter(c => c.checked_at.startsWith(yesterdayStr));
+  const yesterdayCheckins = (checkins || []).filter((c) =>
+    c.checked_at.startsWith(yesterdayStr),
+  );
   const yesterdayLatest =
-    yesterdayCheckins.find(c => c.timing === 'checkout' || c.timing === 'evening') ||
-    yesterdayCheckins.find(c => c.timing === 'morning');
+    yesterdayCheckins.find(
+      (c) => c.timing === "checkout" || c.timing === "evening",
+    ) || yesterdayCheckins.find((c) => c.timing === "morning");
   const yesterdayScore = yesterdayLatest?.condition_score ?? null;
-  const scoreDiff = todayScore !== null && yesterdayScore !== null ? todayScore - yesterdayScore : null;
+  const scoreDiff =
+    todayScore !== null && yesterdayScore !== null
+      ? todayScore - yesterdayScore
+      : null;
 
   // グラフデータ
-  const scoreData: DailyScore[] = last7Days.map(date => {
-    const day = (checkins || []).filter(c => c.checked_at.startsWith(date));
-    const checkout = day.find(c => c.timing === 'checkout' || c.timing === 'evening');
-    const morning = day.find(c => c.timing === 'morning');
+  const scoreData: DailyScore[] = last7Days.map((date) => {
+    const day = (checkins || []).filter((c) => c.checked_at.startsWith(date));
+    const checkout = day.find(
+      (c) => c.timing === "checkout" || c.timing === "evening",
+    );
+    const morning = day.find((c) => c.timing === "morning");
     const best = checkout || morning;
     return {
       date,
@@ -78,40 +112,56 @@ export default async function DashboardPage() {
     };
   });
 
-  const meditationData: DailyMeditation[] = last7Days.map(date => ({
+  const meditationData: DailyMeditation[] = last7Days.map((date) => ({
     date,
-    count: (meditationLogs || []).filter(m => m.logged_at.startsWith(date)).length,
+    count: (meditationLogs || []).filter((m) => m.logged_at.startsWith(date))
+      .length,
   }));
 
   // 週平均
-  const validScores = scoreData.filter(d => d.score !== null).map(d => d.score!);
-  const thisWeekAvg = validScores.length > 0
-    ? Math.round(validScores.reduce((a, b) => a + b, 0) / validScores.length)
-    : null;
+  const validScores = scoreData
+    .filter((d) => d.score !== null)
+    .map((d) => d.score!);
+  const thisWeekAvg =
+    validScores.length > 0
+      ? Math.round(validScores.reduce((a, b) => a + b, 0) / validScores.length)
+      : null;
 
   const prevValidScores = (prevWeekCheckins || [])
-    .map(c => c.condition_score)
+    .map((c) => c.condition_score)
     .filter((s): s is number => s !== null);
-  const lastWeekAvg = prevValidScores.length > 0
-    ? Math.round(prevValidScores.reduce((a, b) => a + b, 0) / prevValidScores.length)
-    : null;
+  const lastWeekAvg =
+    prevValidScores.length > 0
+      ? Math.round(
+          prevValidScores.reduce((a, b) => a + b, 0) / prevValidScores.length,
+        )
+      : null;
 
   const totalMeditations = meditationData.reduce((sum, d) => sum + d.count, 0);
 
   const window_ = getCheckinWindow();
-  const showMorningCTA = window_ === 'morning' && !morningCheckin;
-  const showCheckoutCTA = window_ === 'checkout' && !checkoutCheckin;
+  const showMorningCTA = window_ === "morning" && !morningCheckin;
+  const showCheckoutCTA = window_ === "checkout" && !checkoutCheckin;
   const showCTA = showMorningCTA || showCheckoutCTA;
-  const ctaLabel = showMorningCTA ? '朝チェックイン' : '夜チェックアウト';
+  const ctaLabel = showMorningCTA ? "朝チェックイン" : "夜チェックアウト";
 
-  const uniqueDays = new Set((checkins || []).map(c => c.checked_at.split('T')[0])).size;
+  const uniqueDays = new Set(
+    (checkins || []).map((c) => c.checked_at.split("T")[0]),
+  ).size;
   const hasEnoughData = uniqueDays >= 5;
 
-  const weekDiff = thisWeekAvg !== null && lastWeekAvg !== null ? thisWeekAvg - lastWeekAvg : null;
-  const diffColor = scoreDiff === null ? 'var(--muted-foreground)'
-    : scoreDiff > 0 ? 'var(--color-success)'
-    : scoreDiff < 0 ? 'var(--color-warning)'
-    : 'var(--muted-foreground)';
+  const weekDiff =
+    thisWeekAvg !== null && lastWeekAvg !== null
+      ? thisWeekAvg - lastWeekAvg
+      : null;
+  const diffColor =
+    scoreDiff === null
+      ? "var(--muted-foreground)"
+      : scoreDiff > 0
+        ? "var(--color-success)"
+        : scoreDiff < 0
+          ? "var(--color-warning)"
+          : "var(--muted-foreground)";
 
   return (
     <>
@@ -123,13 +173,12 @@ export default async function DashboardPage() {
           <CheckinCTABanner
             greeting=""
             ctaLabel={ctaLabel}
-            timing={showMorningCTA ? 'morning' : 'checkout'}
+            timing={showMorningCTA ? "morning" : "checkout"}
           />
         )}
 
         {/* ── 上段：今日のスコア (1/3) + チャート (2/3) ── */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
           {/* 今日のコンディション */}
           <Card>
             <CardHeader className="pb-3">
@@ -141,7 +190,7 @@ export default async function DashboardPage() {
                   {/* スコア + 前日比 */}
                   <div className="flex items-end gap-3">
                     <span className="text-6xl font-extrabold leading-none tracking-tighter tabular-nums text-foreground">
-                      {todayScore ?? '–'}
+                      {todayScore ?? "–"}
                     </span>
                     {scoreDiff !== null && (
                       <div className="flex flex-col gap-1 pb-1">
@@ -149,39 +198,95 @@ export default async function DashboardPage() {
                           className="text-sm font-bold px-2 py-0.5 rounded-full border"
                           style={{
                             color: diffColor,
-                            background: scoreDiff > 0 ? 'var(--color-success-subtle)' : scoreDiff < 0 ? 'var(--color-warning-subtle)' : 'var(--color-surface-subtle)',
-                            borderColor: scoreDiff > 0 ? 'var(--color-success)' : scoreDiff < 0 ? 'var(--color-warning)' : 'var(--border)',
+                            background:
+                              scoreDiff > 0
+                                ? "var(--color-success-subtle)"
+                                : scoreDiff < 0
+                                  ? "var(--color-warning-subtle)"
+                                  : "var(--color-surface-subtle)",
+                            borderColor:
+                              scoreDiff > 0
+                                ? "var(--color-success)"
+                                : scoreDiff < 0
+                                  ? "var(--color-warning)"
+                                  : "var(--border)",
                           }}
                         >
-                          {scoreDiff > 0 ? `+${scoreDiff}` : scoreDiff === 0 ? '±0' : scoreDiff}
+                          {scoreDiff > 0
+                            ? `+${scoreDiff}`
+                            : scoreDiff === 0
+                              ? "±0"
+                              : scoreDiff}
                         </span>
-                        <span className="text-xs text-muted-foreground">前日比</span>
+                        <span className="text-xs text-muted-foreground">
+                          前日比
+                        </span>
                       </div>
                     )}
                   </div>
 
                   {/* 心・体 */}
                   <div className="grid grid-cols-2 gap-2">
-                    {([
-                      { Icon: Brain,    label: '心', score: todayMindScore, color: 'var(--color-warning)', bg: 'var(--color-warning-subtle)', border: 'var(--color-warning)' },
-                      { Icon: Activity, label: '体', score: todayBodyScore, color: 'var(--color-success)', bg: 'var(--color-success-subtle)', border: 'var(--color-success)' },
-                    ] as const).map(({ Icon, label, score, color, bg, border }) => (
+                    {(
+                      [
+                        {
+                          Icon: Brain,
+                          label: "心",
+                          score: todayMindScore,
+                          color: "var(--color-warning)",
+                          bg: "var(--color-warning-subtle)",
+                          border: "var(--color-warning)",
+                        },
+                        {
+                          Icon: Activity,
+                          label: "体",
+                          score: todayBodyScore,
+                          color: "var(--color-success)",
+                          bg: "var(--color-success-subtle)",
+                          border: "var(--color-success)",
+                        },
+                      ] as const
+                    ).map(({ Icon, label, score, color, bg, border }) => (
                       <div
                         key={label}
                         className="flex items-center justify-between rounded-lg px-3 py-2.5"
                         style={{
-                          background: score !== null ? bg : 'var(--color-surface-subtle)',
-                          border: `1px solid ${score !== null ? border : 'var(--border)'}`,
+                          background:
+                            score !== null ? bg : "var(--color-surface-subtle)",
+                          border: `1px solid ${score !== null ? border : "var(--border)"}`,
                         }}
                       >
                         <div className="flex items-center gap-1.5">
-                          <Icon size={12} strokeWidth={2} color={score !== null ? color : 'var(--muted-foreground)'} />
-                          <span className="text-xs font-medium" style={{ color: score !== null ? color : 'var(--muted-foreground)' }}>
+                          <Icon
+                            size={12}
+                            strokeWidth={2}
+                            color={
+                              score !== null ? color : "var(--muted-foreground)"
+                            }
+                          />
+                          <span
+                            className="text-xs font-medium"
+                            style={{
+                              color:
+                                score !== null
+                                  ? color
+                                  : "var(--muted-foreground)",
+                            }}
+                          >
                             {label}
                           </span>
                         </div>
-                        <span className="text-base font-bold tabular-nums" style={{ color: score !== null ? color : 'var(--muted-foreground)', letterSpacing: '-0.03em' }}>
-                          {score ?? '–'}
+                        <span
+                          className="text-base font-bold tabular-nums"
+                          style={{
+                            color:
+                              score !== null
+                                ? color
+                                : "var(--muted-foreground)",
+                            letterSpacing: "-0.03em",
+                          }}
+                        >
+                          {score ?? "–"}
                         </span>
                       </div>
                     ))}
@@ -191,12 +296,18 @@ export default async function DashboardPage() {
                 <div className="flex flex-col items-center justify-center gap-3 py-6 text-center">
                   <div
                     className="flex size-12 items-center justify-center rounded-full"
-                    style={{ background: 'var(--color-surface-subtle)' }}
+                    style={{ background: "var(--color-surface-subtle)" }}
                   >
-                    <TrendingUp size={20} strokeWidth={1.8} color="var(--muted-foreground)" />
+                    <TrendingUp
+                      size={20}
+                      strokeWidth={1.8}
+                      color="var(--muted-foreground)"
+                    />
                   </div>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    今日のチェックインが<br />まだありません
+                    今日のチェックインが
+                    <br />
+                    まだありません
                   </p>
                 </div>
               )}
@@ -211,8 +322,11 @@ export default async function DashboardPage() {
                 {thisWeekAvg !== null && (
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-muted-foreground">
-                      今週平均{' '}
-                      <span className="font-bold text-[15px]" style={{ color: 'var(--color-success)' }}>
+                      今週平均{" "}
+                      <span
+                        className="font-bold text-[15px]"
+                        style={{ color: "var(--color-success)" }}
+                      >
                         {thisWeekAvg}
                       </span>
                     </span>
@@ -220,12 +334,23 @@ export default async function DashboardPage() {
                       <span
                         className="text-xs font-bold px-2 py-0.5 rounded-full border"
                         style={{
-                          color: weekDiff > 0 ? 'var(--color-success)' : 'var(--color-warning)',
-                          background: weekDiff > 0 ? 'var(--color-success-subtle)' : 'var(--color-warning-subtle)',
-                          borderColor: weekDiff > 0 ? 'var(--color-success)' : 'var(--color-warning)',
+                          color:
+                            weekDiff > 0
+                              ? "var(--color-success)"
+                              : "var(--color-warning)",
+                          background:
+                            weekDiff > 0
+                              ? "var(--color-success-subtle)"
+                              : "var(--color-warning-subtle)",
+                          borderColor:
+                            weekDiff > 0
+                              ? "var(--color-success)"
+                              : "var(--color-warning)",
                         }}
                       >
-                        {weekDiff > 0 ? `+${Math.round(weekDiff)}` : Math.round(weekDiff)}
+                        {weekDiff > 0
+                          ? `+${Math.round(weekDiff)}`
+                          : Math.round(weekDiff)}
                       </span>
                     )}
                   </div>
@@ -254,17 +379,30 @@ export default async function DashboardPage() {
 
         {/* ── 下段：瞑想 + 週次レポート ── */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
           {/* 瞑想トラッカー */}
           <Card>
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardDescription>瞑想（7日間）</CardDescription>
                 <div className="flex items-center gap-1.5">
-                  <Wind size={13} strokeWidth={2} color={totalMeditations > 0 ? 'var(--color-warning)' : 'var(--muted-foreground)'} />
+                  <Wind
+                    size={13}
+                    strokeWidth={2}
+                    color={
+                      totalMeditations > 0
+                        ? "var(--color-warning)"
+                        : "var(--muted-foreground)"
+                    }
+                  />
                   <span
                     className="text-sm font-bold tabular-nums"
-                    style={{ color: totalMeditations > 0 ? 'var(--color-warning)' : 'var(--muted-foreground)', letterSpacing: '-0.02em' }}
+                    style={{
+                      color:
+                        totalMeditations > 0
+                          ? "var(--color-warning)"
+                          : "var(--muted-foreground)",
+                      letterSpacing: "-0.02em",
+                    }}
                   >
                     {totalMeditations}回
                   </span>

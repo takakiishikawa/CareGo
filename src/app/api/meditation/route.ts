@@ -1,26 +1,28 @@
-import { createClient } from '@/lib/supabase/server';
-import { NextResponse } from 'next/server';
-import { CheckinTiming } from '@/lib/types';
+import { createClient } from "@/lib/supabase/server";
+import { NextResponse } from "next/server";
+import { CheckinTiming } from "@/lib/types";
 
-const VALID_TIMINGS: CheckinTiming[] = ['morning', 'checkout'];
+const VALID_TIMINGS: CheckinTiming[] = ["morning", "checkout"];
 
 export async function POST(request: Request) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const body = await request.json();
   const { timing, checkin_id } = body;
 
   if (!timing || !VALID_TIMINGS.includes(timing)) {
-    return NextResponse.json({ error: 'Invalid timing' }, { status: 400 });
+    return NextResponse.json({ error: "Invalid timing" }, { status: 400 });
   }
 
   const { data, error } = await supabase
-    .from('meditation_logs')
+    .from("meditation_logs")
     .insert({
       user_id: user.id,
       timing,

@@ -1,4 +1,9 @@
-import { TrendingUp, Lightbulb, ArrowRight, type LucideIcon } from 'lucide-react';
+import {
+  TrendingUp,
+  Lightbulb,
+  ArrowRight,
+  type LucideIcon,
+} from "lucide-react";
 
 export interface InsightSections {
   summary: string;
@@ -17,8 +22,12 @@ export interface SectionMeta {
 
 export function parseInsightSections(text: string): InsightSections | null {
   const summaryMatch =
-    text.match(/【今週のサマリー】\s*([\s\S]*?)(?=【パターン分析】|【来週への一言】|$)/) ??
-    text.match(/【今週のまとめ】\s*([\s\S]*?)(?=【気づき】|【来週への提案】|$)/);
+    text.match(
+      /【今週のサマリー】\s*([\s\S]*?)(?=【パターン分析】|【来週への一言】|$)/,
+    ) ??
+    text.match(
+      /【今週のまとめ】\s*([\s\S]*?)(?=【気づき】|【来週への提案】|$)/,
+    );
   const insightMatch =
     text.match(/【パターン分析】\s*([\s\S]*?)(?=【来週への一言】|$)/) ??
     text.match(/【気づき】\s*([\s\S]*?)(?=【来週への提案】|$)/);
@@ -29,35 +38,35 @@ export function parseInsightSections(text: string): InsightSections | null {
   if (!summaryMatch && !insightMatch && !suggestionMatch) return null;
 
   return {
-    summary: summaryMatch?.[1]?.trim() ?? '',
-    insight: insightMatch?.[1]?.trim() ?? '',
-    suggestion: suggestionMatch?.[1]?.trim() ?? '',
+    summary: summaryMatch?.[1]?.trim() ?? "",
+    insight: insightMatch?.[1]?.trim() ?? "",
+    suggestion: suggestionMatch?.[1]?.trim() ?? "",
   };
 }
 
 export const SECTION_META: SectionMeta[] = [
   {
-    key: 'summary',
-    label: '今週のサマリー',
+    key: "summary",
+    label: "今週のサマリー",
     Icon: TrendingUp,
-    color: 'var(--color-success)',
-    bg: 'var(--color-success-subtle)',
-    border: 'var(--color-success)',
+    color: "var(--color-success)",
+    bg: "var(--color-success-subtle)",
+    border: "var(--color-success)",
   },
   {
-    key: 'insight',
-    label: 'パターン分析',
+    key: "insight",
+    label: "パターン分析",
     Icon: Lightbulb,
-    color: 'var(--color-warning)',
-    bg: 'var(--color-warning-subtle)',
-    border: 'var(--color-warning)',
+    color: "var(--color-warning)",
+    bg: "var(--color-warning-subtle)",
+    border: "var(--color-warning)",
   },
   {
-    key: 'suggestion',
-    label: '来週への一言',
+    key: "suggestion",
+    label: "来週への一言",
     Icon: ArrowRight,
-    color: 'var(--color-success)',
-    bg: 'var(--color-success-subtle)',
-    border: 'var(--color-success)',
+    color: "var(--color-success)",
+    bg: "var(--color-success-subtle)",
+    border: "var(--color-success)",
   },
 ];

@@ -30,9 +30,16 @@ export default async function RootLayout({
   } = await supabase.auth.getUser();
 
   return (
-    <html lang="ja" className={`${dmSans.variable} h-full antialiased`} suppressHydrationWarning>
+    <html
+      lang="ja"
+      className={`${dmSans.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
         <meta name="theme-color" content="#2D8A5F" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -42,17 +49,23 @@ export default async function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <DesignTokens primaryColor="#2D8A5F" primaryColorHover="#226b49" />
         {/* Dark mode init: class-based for go-design-system compatibility */}
-        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var s=localStorage.getItem('carego-theme');if(s==='dark'){document.documentElement.classList.add('dark');}else if(s==='light'){document.documentElement.classList.remove('dark');}else{var h=(new Date().getUTCHours()+7)%24;if(h>=18||h<6){document.documentElement.classList.add('dark');}}}catch(e){}})();` }} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=localStorage.getItem('carego-theme');if(s==='dark'){document.documentElement.classList.add('dark');}else if(s==='light'){document.documentElement.classList.remove('dark');}else{var h=(new Date().getUTCHours()+7)%24;if(h>=18||h<6){document.documentElement.classList.add('dark');}}}catch(e){}})();`,
+          }}
+        />
         {/* Sidebar accent color for CareGo (green) */}
-        <style dangerouslySetInnerHTML={{ __html: `:root{--sidebar-accent:142 60% 93%;--sidebar-accent-foreground:152 60% 25%}.dark{--sidebar-accent:150 30% 16%;--sidebar-accent-foreground:142 40% 75%}` }} />
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `:root{--sidebar-accent:142 60% 93%;--sidebar-accent-foreground:152 60% 25%}.dark{--sidebar-accent:150 30% 16%;--sidebar-accent-foreground:142 40% 75%}`,
+          }}
+        />
       </head>
       <body className="min-h-full">
         <SplashScreen />
         <ServiceWorkerRegistrar />
         {user ? (
-          <AppLayout sidebar={<CareGoSidebar />}>
-            {children}
-          </AppLayout>
+          <AppLayout sidebar={<CareGoSidebar />}>{children}</AppLayout>
         ) : (
           <main>{children}</main>
         )}

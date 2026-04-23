@@ -1,5 +1,5 @@
-export type CheckinTiming = 'morning' | 'checkout';
-export type Rating = 'A' | 'B' | 'C';
+export type CheckinTiming = "morning" | "checkout";
+export type Rating = "A" | "B" | "C";
 export type TimePeriodRatings = Record<string, Rating>;
 
 export interface Checkin {
