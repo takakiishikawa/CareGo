@@ -159,7 +159,10 @@ export default function CompleteContent({
         <div className="flex items-center gap-2 mb-2">
           <div
             className="flex size-7 items-center justify-center rounded-md"
-            style={{ background: "var(--card)", boxShadow: "var(--border border-border)" }}
+            style={{
+              background: "var(--card)",
+              boxShadow: "var(--border border-border)",
+            }}
           >
             <Wind size={14} strokeWidth={2} color="var(--color-warning)" />
           </div>
