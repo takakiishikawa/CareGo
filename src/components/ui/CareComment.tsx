@@ -1,5 +1,3 @@
-"use client";
-
 import { Lightbulb, ArrowRight } from "lucide-react";
 
 interface Section {
