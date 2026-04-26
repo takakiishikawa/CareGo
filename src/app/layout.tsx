@@ -1,6 +1,3 @@
-The file path in the error (`src/app/layout.tsx`) doesn't exist here, but I have the content from the prompt. The fix is to remove the two missing imports and their JSX usages since those components don't exist in the codebase.
-
-```tsx
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
