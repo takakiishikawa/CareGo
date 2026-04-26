@@ -1,7 +1,5 @@
 "use client";
 
-import { Button } from "@takaki/go-design-system";
-
 const EMOTION_TAGS = [
   "穏やか",
   "リラックス",
@@ -78,7 +76,7 @@ function TagButton({
     : "var(--color-warning)";
 
   return (
-    <Button
+    <button
       type="button"
       onClick={onClick}
       style={{
@@ -99,7 +97,7 @@ function TagButton({
       }}
     >
       {label}
-    </Button>
+    </button>
   );
 }
 

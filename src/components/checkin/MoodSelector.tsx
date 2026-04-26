@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@takaki/go-design-system";
 import MoodFace from "./MoodFaces";
 
 const MOOD_LABELS: Record<number, string> = {
@@ -26,7 +25,7 @@ function MoodButton({
   onClick: () => void;
 }) {
   return (
-    <Button
+    <button
       onClick={onClick}
       type="button"
       style={{
@@ -62,7 +61,7 @@ function MoodButton({
       >
         {MOOD_LABELS[score]}
       </div>
-    </Button>
+    </button>
   );
 }
 

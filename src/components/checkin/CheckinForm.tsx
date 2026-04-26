@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import {
   Loader2,
   Activity,
@@ -10,11 +11,19 @@ import {
   BarChart2,
   FileText,
 } from "lucide-react";
-import TimePeriodSelector from "./TimePeriodSelector";
-import ActivityTags from "./ActivityTags";
 import { createClient } from "@/lib/supabase/client";
 import { TimePeriodRatings } from "@/lib/types";
 import { Button, Card, Separator } from "@takaki/go-design-system";
+
+const TimePeriodSelector = dynamic(() => import("./TimePeriodSelector"), {
+  ssr: false,
+  loading: () => <div style={{ height: 180 }} />,
+});
+
+const ActivityTags = dynamic(() => import("./ActivityTags"), {
+  ssr: false,
+  loading: () => <div style={{ height: 80 }} />,
+});
 
 interface CheckinFormProps {
   timing: "morning" | "checkout";
@@ -198,7 +207,6 @@ export default function CheckinForm({ timing }: CheckinFormProps) {
   return (
     <div className="max-w-4xl">
       <Card className="overflow-hidden p-0">
-        {/* 2-col layout on lg: left = time periods, right = activity + memo */}
         <div className="grid grid-cols-1 lg:grid-cols-2">
           {/* ── 左パネル：時間帯コンディション ── */}
           <div className="p-6 lg:border-r border-b lg:border-b-0 border-border">
@@ -227,7 +235,6 @@ export default function CheckinForm({ timing }: CheckinFormProps) {
 
           {/* ── 右パネル：活動 + メモ ── */}
           <div className="p-6 space-y-5">
-            {/* 活動タグ */}
             <div>
               <SectionLabel
                 icon={
@@ -251,7 +258,6 @@ export default function CheckinForm({ timing }: CheckinFormProps) {
 
             <Separator />
 
-            {/* メモ */}
             <div>
               <div className="flex items-center justify-between mb-3">
                 <SectionLabel
