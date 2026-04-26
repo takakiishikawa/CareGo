@@ -1,3 +1,5 @@
+The `CareComment` component doesn't exist anywhere in the codebase. I'll fix the file by inlining the comment display directly, removing the missing import.
+
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
@@ -11,7 +13,6 @@ import {
   Activity,
   Loader2,
 } from "lucide-react";
-import CareComment from "@/components/ui/CareComment";
 import {
   Button,
   Card,
@@ -141,7 +142,7 @@ export default function CompleteContent({
             <CardDescription>Care からのコメント</CardDescription>
           </CardHeader>
           <CardContent>
-            <CareComment comment={comment} />
+            <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{comment}</p>
           </CardContent>
         </Card>
       )}

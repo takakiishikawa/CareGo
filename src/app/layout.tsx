@@ -1,3 +1,6 @@
+The file path in the error (`src/app/layout.tsx`) doesn't exist here, but I have the content from the prompt. The fix is to remove the two missing imports and their JSX usages since those components don't exist in the codebase.
+
+```tsx
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
@@ -5,8 +8,6 @@ import { DesignTokens, AppLayout, Toaster } from "@takaki/go-design-system";
 import { Analytics } from "@vercel/analytics/react";
 import { CareGoSidebar } from "@/components/layout/care-go-sidebar";
 import { createClient } from "@/lib/supabase/server";
-import ServiceWorkerRegistrar from "@/components/ui/ServiceWorkerRegistrar";
-import SplashScreen from "@/components/ui/SplashScreen";
 
 const dmSans = DM_Sans({
   weight: ["400", "500", "600", "700"],
@@ -63,8 +64,6 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-full">
-        <SplashScreen />
-        <ServiceWorkerRegistrar />
         {user ? (
           <AppLayout sidebar={<CareGoSidebar />}>{children}</AppLayout>
         ) : (

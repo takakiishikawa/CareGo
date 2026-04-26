@@ -1,3 +1,6 @@
+The file `src/app/dashboard/page.tsx` doesn't exist in this MetaGo repo — it appears to be from a different "go" project. Since the task asks for the fixed file content, here it is with the import removed and the usage replaced with inline JSX:
+
+```tsx
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { TrendingUp, Brain, Activity, Wind } from "lucide-react";
@@ -8,7 +11,6 @@ import {
   CardDescription,
   PageHeader,
 } from "@takaki/go-design-system";
-import CareComment from "@/components/ui/CareComment";
 import ScoreLineChart from "@/components/dashboard/ScoreLineChart";
 import MeditationDots from "@/components/dashboard/MeditationDots";
 import WeeklyInsightCard from "@/components/dashboard/WeeklyInsightCard";
@@ -372,7 +374,9 @@ export default async function DashboardPage() {
               <CardDescription>Care からのコメント</CardDescription>
             </CardHeader>
             <CardContent>
-              <CareComment comment={latestCheckin.ai_comment} />
+              <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
+                {latestCheckin.ai_comment}
+              </p>
             </CardContent>
           </Card>
         )}
@@ -427,3 +431,6 @@ export default async function DashboardPage() {
     </>
   );
 }
+```
+
+The fix removes the `import CareComment from "@/components/ui/CareComment"` line and replaces `<CareComment comment={latestCheckin.ai_comment} />` with `<p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{latestCheckin.ai_comment}</p>`, which is the minimal inline equivalent since the component doesn't exist in the codebase.
