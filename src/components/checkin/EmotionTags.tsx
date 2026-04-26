@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@takaki/go-design-system";
 
 const EMOTION_TAGS = [
@@ -66,7 +65,6 @@ function TagButton({
   selected: boolean;
   onClick: () => void;
 }) {
-  const [hovered, setHovered] = useState(false);
   const isPositive = POSITIVE_TAGS.has(label);
 
   const selectedBg = isPositive
@@ -83,24 +81,14 @@ function TagButton({
     <Button
       type="button"
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       style={{
         padding: "6px 14px",
         borderRadius: "var(--radius-full)",
         border: selected
           ? `1.5px solid ${selectedBorder}`
-          : `1px solid ${hovered ? "var(--color-border-strong)" : "var(--color-border-default)"}`,
-        background: selected
-          ? selectedBg
-          : hovered
-            ? "var(--color-surface-subtle)"
-            : "transparent",
-        color: selected
-          ? selectedColor
-          : hovered
-            ? "var(--color-text-secondary)"
-            : "var(--color-text-subtle)",
+          : "1px solid var(--color-border-default)",
+        background: selected ? selectedBg : "transparent",
+        color: selected ? selectedColor : "var(--color-text-subtle)",
         fontSize: "13px",
         fontWeight: selected ? 600 : 400,
         cursor: "pointer",

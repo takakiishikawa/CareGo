@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@takaki/go-design-system";
 import MoodFace from "./MoodFaces";
 
@@ -26,35 +25,22 @@ function MoodButton({
   selected: boolean;
   onClick: () => void;
 }) {
-  const [hovered, setHovered] = useState(false);
-  const [pressed, setPressed] = useState(false);
-
   return (
     <Button
       onClick={onClick}
       type="button"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => {
-        setHovered(false);
-        setPressed(false);
-      }}
-      onMouseDown={() => setPressed(true)}
-      onMouseUp={() => setPressed(false)}
       style={{
         flex: 1,
         padding: "14px 6px 12px",
         borderRadius: "var(--radius-lg)",
         border: selected
           ? "2px solid var(--color-primary)"
-          : `0.5px solid ${hovered ? "var(--color-border-strong)" : "var(--color-border-default)"}`,
+          : "0.5px solid var(--color-border-default)",
         background: selected
           ? "var(--color-surface-subtle)"
-          : hovered
-            ? "var(--color-surface-subtle)"
-            : "var(--color-surface)",
+          : "var(--color-surface)",
         cursor: "pointer",
         textAlign: "center",
-        transform: pressed ? "scale(0.96)" : "scale(1)",
         transition: "all 0.15s ease",
         display: "flex",
         flexDirection: "column",

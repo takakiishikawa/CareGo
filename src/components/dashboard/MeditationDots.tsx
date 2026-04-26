@@ -1,5 +1,3 @@
-"use client";
-
 import { DailyMeditation } from "@/lib/types";
 
 interface MeditationDotsProps {
@@ -53,7 +51,7 @@ export default function MeditationDots({ data }: MeditationDotsProps) {
                 alignItems: "center",
               }}
             >
-              {d.count > 0 ? `${d.count}` : "–"}
+              {d.count > 0 ? `${d.count}` : "\u2013"}
             </div>
 
             {/* ドット */}

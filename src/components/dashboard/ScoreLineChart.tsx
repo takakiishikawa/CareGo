@@ -1,16 +1,7 @@
 "use client";
 
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceDot,
-} from "recharts";
-import { DailyScore } from "@/lib/types";
+import dynamic from "next/dynamic";
+import type { DailyScore } from "@/lib/types";
 
 interface ScoreLineChartProps {
   data: DailyScore[];
@@ -61,6 +52,130 @@ function CustomTooltip({ active, payload, label }: TooltipProps) {
   );
 }
 
+interface ChartInnerProps {
+  chartData: Array<{ label: string; score: number | null; date: string; isToday: boolean }>;
+  minScore: number;
+  maxScore: number;
+  todayDot: { label: string; score: number | null } | undefined;
+  fillHeight: boolean;
+}
+
+const ChartInner = dynamic<ChartInnerProps>(
+  () =>
+    import("recharts").then(
+      ({ AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceDot }) => {
+        function RechartsChart({ chartData, minScore, maxScore, todayDot, fillHeight }: ChartInnerProps) {
+          return (
+            <div
+              style={{
+                width: "100%",
+                height: fillHeight ? "100%" : 240,
+                minHeight: 180,
+              }}
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={chartData}
+                  margin={{ top: 12, right: 8, bottom: 4, left: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="scoreGradFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop
+                        offset="0%"
+                        stopColor="var(--color-primary)"
+                        stopOpacity={0.18}
+                      />
+                      <stop
+                        offset="80%"
+                        stopColor="var(--color-primary)"
+                        stopOpacity={0.02}
+                      />
+                      <stop
+                        offset="100%"
+                        stopColor="var(--color-primary)"
+                        stopOpacity={0}
+                      />
+                    </linearGradient>
+                  </defs>
+
+                  <CartesianGrid
+                    strokeDasharray="4 4"
+                    stroke="var(--color-border-subtle)"
+                    vertical={false}
+                    strokeWidth={1}
+                  />
+
+                  <XAxis
+                    dataKey="label"
+                    tick={{
+                      fontSize: 12,
+                      fill: "var(--color-text-subtle)",
+                      fontFamily: "DM Sans, system-ui, sans-serif",
+                    }}
+                    tickLine={false}
+                    axisLine={false}
+                    dy={6}
+                  />
+
+                  <YAxis
+                    domain={[minScore, maxScore]}
+                    tick={{
+                      fontSize: 12,
+                      fill: "var(--color-text-subtle)",
+                      fontFamily: "DM Sans, system-ui, sans-serif",
+                    }}
+                    tickLine={false}
+                    axisLine={false}
+                    width={28}
+                    tickCount={4}
+                  />
+
+                  <Tooltip
+                    content={<CustomTooltip />}
+                    cursor={{
+                      stroke: "var(--border)",
+                      strokeWidth: 1,
+                      strokeDasharray: "4 4",
+                    }}
+                  />
+
+                  <Area
+                    type="monotone"
+                    dataKey="score"
+                    stroke="var(--color-primary)"
+                    strokeWidth={2.5}
+                    fill="url(#scoreGradFill)"
+                    dot={false}
+                    activeDot={{
+                      r: 5,
+                      fill: "var(--color-primary)",
+                      stroke: "var(--card)",
+                      strokeWidth: 2,
+                    }}
+                    connectNulls={false}
+                  />
+
+                  {todayDot && todayDot.score != null && (
+                    <ReferenceDot
+                      x={todayDot.label}
+                      y={todayDot.score}
+                      r={6}
+                      fill="var(--color-primary)"
+                      stroke="var(--card)"
+                      strokeWidth={2.5}
+                    />
+                  )}
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          );
+        }
+        return RechartsChart;
+      }
+    ),
+  { ssr: false, loading: () => <div style={{ height: 240, minHeight: 180 }} /> }
+);
+
 export default function ScoreLineChart({
   data,
   fillHeight = false,
@@ -84,107 +199,12 @@ export default function ScoreLineChart({
   const todayDot = chartData.find((d) => d.isToday && d.score != null);
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: fillHeight ? "100%" : 240,
-        minHeight: 180,
-      }}
-    >
-      <ResponsiveContainer width="100%" height="100%">
-        <AreaChart
-          data={chartData}
-          margin={{ top: 12, right: 8, bottom: 4, left: 0 }}
-        >
-          <defs>
-            <linearGradient id="scoreGradFill" x1="0" y1="0" x2="0" y2="1">
-              <stop
-                offset="0%"
-                stopColor="var(--color-primary)"
-                stopOpacity={0.18}
-              />
-              <stop
-                offset="80%"
-                stopColor="var(--color-primary)"
-                stopOpacity={0.02}
-              />
-              <stop
-                offset="100%"
-                stopColor="var(--color-primary)"
-                stopOpacity={0}
-              />
-            </linearGradient>
-          </defs>
-
-          <CartesianGrid
-            strokeDasharray="4 4"
-            stroke="var(--color-border-subtle)"
-            vertical={false}
-            strokeWidth={1}
-          />
-
-          <XAxis
-            dataKey="label"
-            tick={{
-              fontSize: 12,
-              fill: "var(--color-text-subtle)",
-              fontFamily: "DM Sans, system-ui, sans-serif",
-            }}
-            tickLine={false}
-            axisLine={false}
-            dy={6}
-          />
-
-          <YAxis
-            domain={[minScore, maxScore]}
-            tick={{
-              fontSize: 12,
-              fill: "var(--color-text-subtle)",
-              fontFamily: "DM Sans, system-ui, sans-serif",
-            }}
-            tickLine={false}
-            axisLine={false}
-            width={28}
-            tickCount={4}
-          />
-
-          <Tooltip
-            content={<CustomTooltip />}
-            cursor={{
-              stroke: "var(--border)",
-              strokeWidth: 1,
-              strokeDasharray: "4 4",
-            }}
-          />
-
-          <Area
-            type="monotone"
-            dataKey="score"
-            stroke="var(--color-primary)"
-            strokeWidth={2.5}
-            fill="url(#scoreGradFill)"
-            dot={false}
-            activeDot={{
-              r: 5,
-              fill: "var(--color-primary)",
-              stroke: "var(--card)",
-              strokeWidth: 2,
-            }}
-            connectNulls={false}
-          />
-
-          {todayDot && todayDot.score != null && (
-            <ReferenceDot
-              x={todayDot.label}
-              y={todayDot.score}
-              r={6}
-              fill="var(--color-primary)"
-              stroke="var(--card)"
-              strokeWidth={2.5}
-            />
-          )}
-        </AreaChart>
-      </ResponsiveContainer>
-    </div>
+    <ChartInner
+      chartData={chartData}
+      minScore={minScore}
+      maxScore={maxScore}
+      todayDot={todayDot}
+      fillHeight={fillHeight}
+    />
   );
 }
