@@ -47,10 +47,9 @@ function TagButton({
   onClick: () => void;
 }) {
   return (
-    <Button
+    <button
       type="button"
       onClick={onClick}
-      variant="ghost"
       className="transition-all duration-150 whitespace-nowrap text-[13px] tracking-tight"
       style={{
         padding: "6px 14px",
@@ -67,7 +66,7 @@ function TagButton({
       }}
     >
       {label}
-    </Button>
+    </button>
   );
 }
 
