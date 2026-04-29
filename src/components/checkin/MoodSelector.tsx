@@ -1,5 +1,6 @@
 "use client";
 
+import { memo, useCallback } from "react";
 import MoodFace from "./MoodFaces";
 
 const MOOD_LABELS: Record<number, string> = {
@@ -15,18 +16,20 @@ interface MoodSelectorProps {
   onChange: (score: number) => void;
 }
 
-function MoodButton({
+const MoodButton = memo(function MoodButton({
   score,
   selected,
-  onClick,
+  onSelect,
 }: {
   score: number;
   selected: boolean;
-  onClick: () => void;
+  onSelect: (score: number) => void;
 }) {
+  const handleClick = useCallback(() => onSelect(score), [score, onSelect]);
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       type="button"
       style={{
         flex: 1,
@@ -63,7 +66,7 @@ function MoodButton({
       </div>
     </button>
   );
-}
+});
 
 export default function MoodSelector({ value, onChange }: MoodSelectorProps) {
   return (
@@ -73,7 +76,7 @@ export default function MoodSelector({ value, onChange }: MoodSelectorProps) {
           key={score}
           score={score}
           selected={value === score}
-          onClick={() => onChange(score)}
+          onSelect={onChange}
         />
       ))}
     </div>

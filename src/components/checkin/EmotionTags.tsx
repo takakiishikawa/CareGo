@@ -1,5 +1,7 @@
 "use client";
 
+import { memo, useCallback } from "react";
+
 const EMOTION_TAGS = [
   "穏やか",
   "リラックス",
@@ -54,16 +56,17 @@ interface EmotionTagsProps {
   onChange: (tags: string[]) => void;
 }
 
-function TagButton({
+const TagButton = memo(function TagButton({
   label,
   selected,
-  onClick,
+  onToggle,
 }: {
   label: string;
   selected: boolean;
-  onClick: () => void;
+  onToggle: (label: string) => void;
 }) {
   const isPositive = POSITIVE_TAGS.has(label);
+  const handleClick = useCallback(() => onToggle(label), [label, onToggle]);
 
   const selectedBg = isPositive
     ? "var(--color-success-subtle)"
@@ -78,7 +81,7 @@ function TagButton({
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={handleClick}
       style={{
         padding: "6px 14px",
         borderRadius: "var(--radius-full)",
@@ -99,16 +102,19 @@ function TagButton({
       {label}
     </button>
   );
-}
+});
 
 export default function EmotionTags({ selected, onChange }: EmotionTagsProps) {
-  const toggle = (tag: string) => {
-    onChange(
-      selected.includes(tag)
-        ? selected.filter((t) => t !== tag)
-        : [...selected, tag],
-    );
-  };
+  const toggle = useCallback(
+    (tag: string) => {
+      onChange(
+        selected.includes(tag)
+          ? selected.filter((t) => t !== tag)
+          : [...selected, tag],
+      );
+    },
+    [selected, onChange],
+  );
 
   return (
     <div style={{ display: "flex", flexWrap: "wrap", gap: "7px" }}>
@@ -117,7 +123,7 @@ export default function EmotionTags({ selected, onChange }: EmotionTagsProps) {
           key={label}
           label={label}
           selected={selected.includes(label)}
-          onClick={() => toggle(label)}
+          onToggle={toggle}
         />
       ))}
     </div>

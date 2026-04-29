@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import {
   Button,
   Dialog,
@@ -104,10 +105,13 @@ export default function ProfileEditDialog({
           <div className="flex items-center gap-4">
             <div className="h-14 w-14 rounded-full overflow-hidden shrink-0 bg-primary flex items-center justify-center">
               {previewUrl ? (
-                <img
+                <Image
                   src={previewUrl}
                   alt="avatar"
+                  width={56}
+                  height={56}
                   className="h-full w-full object-cover"
+                  unoptimized
                 />
               ) : (
                 <span className="text-white text-lg font-medium">
@@ -116,7 +120,7 @@ export default function ProfileEditDialog({
               )}
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium">{editName || "—"}</p>
+              <p className="text-sm font-medium">{editName || "\u2014"}</p>
               <input
                 ref={fileInputRef}
                 type="file"
