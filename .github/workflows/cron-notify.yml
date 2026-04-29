@@ -4,8 +4,8 @@ name: Cron — Notify
 # 旧: vercel.json の crons (Hobby plan の Vercel Cron 制限を避けるため GH Actions に移行)
 #
 # 必要な GitHub Secrets:
-#   PROD_URL    例: https://carego.vercel.app
-#   CRON_SECRET route.ts で検証する Bearer トークン
+#   CRON_SECRET route.ts で検証する Bearer トークン (Vercel 側で未設定なら省略可)
+# 本番 URL は公開情報なので直書き。
 
 on:
   workflow_dispatch:
@@ -20,4 +20,4 @@ jobs:
         run: |
           curl --fail-with-body -sS \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            "${{ secrets.PROD_URL }}/api/cron/notify"
+            "https://care-go-mu.vercel.app/api/cron/notify"
