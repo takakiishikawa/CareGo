@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -123,22 +123,49 @@ export function CareGoSidebar() {
     return () => obs.disconnect();
   }, []);
 
-  function toggleTheme() {
+  const toggleTheme = useCallback(() => {
     const next = isDark ? "light" : "dark";
     localStorage.setItem("carego-theme", next);
     document.documentElement.classList.toggle("dark", next === "dark");
-  }
+  }, [isDark]);
 
-  function openProfile() {
+  const openProfile = useCallback(() => {
     setHasOpenedProfile(true);
     setProfileOpen(true);
-  }
+  }, []);
 
-  async function handleSignOut() {
+  const handleSignOut = useCallback(async () => {
     const { createClient } = await import("@/lib/supabase/client");
     await createClient().auth.signOut();
     window.location.href = "/login";
-  }
+  }, []);
+
+  const userMenuItems = useMemo(
+    () => [
+      {
+        title: "プロフィール編集",
+        icon: UserCog,
+        onSelect: openProfile,
+      },
+      {
+        title: "コンセプト",
+        icon: Lightbulb,
+        onSelect: () => router.push("/concept"),
+        isActive: pathname.startsWith("/concept"),
+      },
+      {
+        title: isDark ? "ダーク" : "ライト",
+        icon: isDark ? Moon : Sun,
+        onSelect: toggleTheme,
+      },
+    ],
+    [isDark, openProfile, toggleTheme, pathname, router],
+  );
+
+  const signOutConfig = useMemo(
+    () => ({ onSelect: handleSignOut }),
+    [handleSignOut],
+  );
 
   return (
     <>
@@ -233,25 +260,8 @@ export function CareGoSidebar() {
             displayName={displayName || "\u2014"}
             email={email}
             avatarUrl={avatarUrl}
-            items={[
-              {
-                title: "プロフィール編集",
-                icon: UserCog,
-                onSelect: openProfile,
-              },
-              {
-                title: "コンセプト",
-                icon: Lightbulb,
-                onSelect: () => router.push("/concept"),
-                isActive: pathname.startsWith("/concept"),
-              },
-              {
-                title: isDark ? "ダーク" : "ライト",
-                icon: isDark ? Moon : Sun,
-                onSelect: toggleTheme,
-              },
-            ]}
-            signOut={{ onSelect: handleSignOut }}
+            items={userMenuItems}
+            signOut={signOutConfig}
           />
         </SidebarFooter>
 

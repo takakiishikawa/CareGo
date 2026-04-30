@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback } from "react";
+import { memo, useCallback, useMemo } from "react";
 
 const EMOTION_TAGS = [
   "穏やか",
@@ -105,15 +105,17 @@ const TagButton = memo(function TagButton({
 });
 
 export default function EmotionTags({ selected, onChange }: EmotionTagsProps) {
+  const selectedSet = useMemo(() => new Set(selected), [selected]);
+
   const toggle = useCallback(
     (tag: string) => {
       onChange(
-        selected.includes(tag)
+        selectedSet.has(tag)
           ? selected.filter((t) => t !== tag)
           : [...selected, tag],
       );
     },
-    [selected, onChange],
+    [selected, selectedSet, onChange],
   );
 
   return (
@@ -122,7 +124,7 @@ export default function EmotionTags({ selected, onChange }: EmotionTagsProps) {
         <TagButton
           key={label}
           label={label}
-          selected={selected.includes(label)}
+          selected={selectedSet.has(label)}
           onToggle={toggle}
         />
       ))}
